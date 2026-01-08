@@ -25,7 +25,7 @@ void startInternetMonitoring() {
   // Avoid attaching multiple listeners if already started
   if (_internetSubscription != null) return;
 
-  final checker = InternetConnectionChecker();
+  final checker = InternetConnectionChecker.instance;
 
   // Initialize the current state
   checker.hasConnection.then((value) {
