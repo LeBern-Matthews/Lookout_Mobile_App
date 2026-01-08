@@ -35,6 +35,7 @@ SECTRET_KEYS.txt
 .pub/
 /build/
 /coverage/
+SECRET_KEYS.txt
 
 # Symbolication related
 app.*.symbols
