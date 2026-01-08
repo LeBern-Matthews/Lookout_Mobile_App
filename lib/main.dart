@@ -9,6 +9,7 @@ import 'pages/home_page.dart';
 import 'pages/settings_page.dart';
 import 'themes/theme_provider.dart';
 import 'services/has_internet.dart';
+import 'components/connectivity_popup.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -64,15 +65,21 @@ class _RootPageState extends State<RootPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: currentPage, // Show the current page
-        children: pages, // Keep all pages in memory
+      body: Stack(
+        children: [
+          IndexedStack(
+            index: currentPage, // Show the current page
+            children: pages, // Keep all pages in memory
+          ),
+          const ConnectivityPopup(),
+        ],
       ),
+      
       bottomNavigationBar: NavigationBar(
 
         shadowColor: Colors.grey,
         backgroundColor: Theme.of(context).colorScheme.primary,
-        height: 60, // Set the background color of the navigation bar
+        height: 60,
         
         labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
         destinations: [
