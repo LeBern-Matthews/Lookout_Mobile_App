@@ -1,0 +1,142 @@
+{
+    "Anguilla": {
+    "police": "911",
+    "ambulance": "1 (268) 462-0251",
+    "fire_dept": "1 (268) 462-0044"
+  },
+    "Antigua and Barbuda": {
+    "police": ["911","999"],
+    "ambulance": "1 (268) 462-0251",
+    "fire_dept": "1 (268) 462-0044"
+  },
+    "Bahamas": {
+    "police": "211",
+    "ambulance": "511",
+    "fire_dept": "311"
+  },
+    "Barbados": {
+    "police": ["911","919", "(242) 322-4444"],
+    "ambulance": "(242) 302-4747",
+    "fire_dept": "919"
+  },
+    "Belize": {
+    "police": "911",
+    "ambulance": "911",
+    "fire_dept": "911"
+  },
+    "Bermuda": {
+    "police": "911",
+    "ambulance": "911",
+    "fire_dept": "911"
+  },
+    "Bonaire": {
+    "police": "911",
+    "ambulance": "911",
+    "fire_dept": "911"
+  },
+    "British Virgin Islands": {
+    "police": "311",
+    "ambulance": "911",
+    "fire_dept": "1 (284) 494-3473"
+  },
+    "Cayman Islands": {
+    "police": "911",
+    "ambulance": "911",
+    "fire_dept": "911"
+  },
+    "Cuba": {
+    "police": "106",
+    "ambulance": "104",
+    "fire_dept": "105"
+  },
+    "Curacao": {
+    "police": "911",
+    "ambulance": "912",
+    "fire_dept": "911"
+  },
+    "Dominica": {
+    "police": "911",
+    "ambulance": "911",
+    "fire_dept": "911"
+  },
+    "Grenada": {
+    "police": "911",
+    "ambulance": 	"434",
+    "fire_dept": "911"
+  },
+    "Guadeloupe": {
+    "police": "17",
+    "ambulance": "15",
+    "fire_dept": "18"
+  },
+    "Jamaica": {
+    "police": "119",
+    "ambulance": "110",
+    "fire_dept": "110"
+  },
+    "Martinique": {
+    "police": "17",
+    "ambulance": "15",
+    "fire_dept": "18"
+  },
+    "Montserrat": {
+    "police":[ "1 (664) 491-2555",  " 1(664) 491-2556"],
+    "ambulance": "1 (664) 491-7790",
+    "fire_dept": "1 (664) 491-7790"
+  },
+    "Puerto Rico": {
+    "police": "911",
+    "ambulance": "911",
+    "fire_dept": "911"
+  },
+    "Saba": {
+     "police": "911",
+    "ambulance": "911",
+    "fire_dept": "911"
+  },
+    "Saint Barthélemy": {
+    "police": "+(599) 461-3237",
+    "ambulance": "+(599) 461-3289",
+    "fire_dept": "+(599) 461-2222"
+  },
+    "Saint Kitts and Nevis": {
+    "police": "465-2241",
+    "ambulance": "465-2551",
+    "fire_dept": "465-2515"
+  },
+    "Saint Lucia": {
+    "police": "999",
+    "ambulance": "911",
+    "fire_dept": "1 (758) 455-6100"
+  },
+    "Saint Martin": {
+    "police": "911",
+    "ambulance": "912",
+    "fire_dept": "919"
+  },
+    "Saint Vincent and the Grenadines": {
+    "police":  ["911","999"],
+    "ambulance": "(784)456-1955",
+    "fire_dept":  ["911", "999"]
+  },
+    "Eustatius": {
+    "police": "912",
+    "ambulance": "912",
+    "fire_dept": "912"
+  },
+    "Trinidad and Tobago": {
+    "police": "999",
+    "ambulance": "811",
+    "fire_dept": "990"
+  },
+    "Turks and Caicos Islands": {
+    "police": "1 (649) 941-8067",
+    "ambulance": "911",
+    "fire_dept": "1 (649) 941-8090"
+
+  },"Select a county in settings": {
+    "police": "Not applicable",
+    "ambulance": "Not applicable",
+    "fire_dept": "Not applicable"
+  }
+}
