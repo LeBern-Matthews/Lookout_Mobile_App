@@ -8,10 +8,13 @@ import 'pages/essential_checklist_page.dart';
 import 'pages/home_page.dart';
 import 'pages/settings_page.dart';
 import 'themes/theme_provider.dart';
+import 'services/has_internet.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  // Start internet monitoring as early as possible
+  startInternetMonitoring();
   runApp(
     MultiProvider(
       providers: [
