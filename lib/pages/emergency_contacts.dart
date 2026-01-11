@@ -48,6 +48,7 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
             children:  [
               Row(
                 children: [
+                  
                   Text("Police Department: ${policeNum.isNotEmpty ? policeNum : 'Not available'}", style: TextStyle(fontSize: 20)),
                   Spacer(),
                   CallingButton(phoneNumber: policeNum, callee: "Police"),

@@ -19,13 +19,14 @@ class CallingButton extends StatefulWidget {
 
 class _CallingButtonState extends State<CallingButton> {
 
-  Future<void> _makePhoneCall(BuildContext context, String phoneNumber) async {
+  Future<void> _makePhoneCall(String phoneNumber) async {
     final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber);
+    // capture the messenger before any await to avoid using BuildContext across async gaps
+    final messenger = ScaffoldMessenger.of(context);
     if (await canLaunchUrl(launchUri)) {
       await launchUrl(launchUri);
     } else {
-      // show a user-friendly message when dialing fails
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Cannot call $phoneNumber')));
+      messenger.showSnackBar(SnackBar(content: Text('Cannot call $phoneNumber')));
     }
   }
 
@@ -60,7 +61,7 @@ class _CallingButtonState extends State<CallingButton> {
       return IconButton(
         icon: Icon(Icons.call),
         tooltip: 'Call ${widget.callee}',
-        onPressed: () => _makePhoneCall(context, num),
+        onPressed: () => _makePhoneCall(num),
       );
     }
 
@@ -68,7 +69,7 @@ class _CallingButtonState extends State<CallingButton> {
     return PopupMenuButton<String>(
       tooltip: 'Call ${widget.callee}',
       icon: Icon(Icons.call),
-      onSelected: (number) => _makePhoneCall(context, number),
+      onSelected: (number) => _makePhoneCall(number),
       itemBuilder: (ctx) => numbers
           .map((n) => PopupMenuItem<String>(value: n, child: Text(n)))
           .toList(),

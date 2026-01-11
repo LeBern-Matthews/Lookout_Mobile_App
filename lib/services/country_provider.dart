@@ -13,9 +13,20 @@ class CountryProvider with ChangeNotifier {
   List<String> get ambulanceNumbers => List.unmodifiable(_ambulanceNumbers);
   List<String> get fireNumbers => List.unmodifiable(_fireNumbers);
 
-  String get primaryPolice => _policeNumbers.isNotEmpty ? _policeNumbers.first : '';
-  String get primaryAmbulance => _ambulanceNumbers.isNotEmpty ? _ambulanceNumbers.first : '';
-  String get primaryFire => _fireNumbers.isNotEmpty ? _fireNumbers.first : '';
+  String get primaryPolice {
+    if (_policeNumbers.length > 1) return 'Multiple numbers';
+    return _policeNumbers.isNotEmpty ? _policeNumbers.first : '';
+  }
+
+  String get primaryAmbulance {
+    if (_ambulanceNumbers.length > 1) return 'Multiple numbers';
+    return _ambulanceNumbers.isNotEmpty ? _ambulanceNumbers.first : '';
+  }
+
+  String get primaryFire {
+    if (_fireNumbers.length > 1) return 'Multiple numbers';
+    return _fireNumbers.isNotEmpty ? _fireNumbers.first : '';
+  }
 
   // Primamry getters
   bool get policeHasMultiple => _policeNumbers.length > 1;
