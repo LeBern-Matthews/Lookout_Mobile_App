@@ -110,6 +110,6 @@ Additional Functions:
 
 ## Dependencies
 
-1. Internet_connection_checker[check it out here](https://pub.dev/packages/internet_connection_checker)
+1. Internet_connection_checker [check it out here](https://pub.dev/packages/internet_connection_checker)
 2. Url_launcher [check it out here](https://pub.dev/packages/url_launcher)
-3. Google_maps_flutter [check it out here](https://pub.dev/packages/google_maps_flutter)
+3. Google_maps_flutter [check it out here](https://pub.dev/packages/google_maps_flutter) currently in testing for the map feature

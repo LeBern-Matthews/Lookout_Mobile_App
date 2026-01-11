@@ -9,7 +9,7 @@ Color _colour = Colors.green; // changed from MaterialColor to Color
 double get progress => _progress;
 Color get colour=>_colour;
 
-  void setProgress( progress) {
+  void setProgress(double progress) {
     _progress = progress;
     setColour();
     notifyListeners();
