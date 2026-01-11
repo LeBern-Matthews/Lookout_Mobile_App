@@ -11,6 +11,8 @@ A mobile app built with Dart and the Flutter framework for hurricane preparednes
 
 [Functions](#functions)
 
+[Dependencies](#dependencies)
+
 ## Features
 ### 1. Home Page:
 - Displays a "Prepared-o-meter" to track your readiness.
