@@ -7,7 +7,7 @@ import 'pages/emergency_contacts.dart';
 import 'pages/essential_checklist_page.dart';
 import 'pages/home_page.dart';
 import 'pages/settings_page.dart';
-import 'pages/map_page.dart';
+//import 'pages/map_page.dart';
 import 'themes/theme_provider.dart';
 import 'services/has_internet.dart';
 import 'components/connectivity_popup.dart';
@@ -61,7 +61,7 @@ class _RootPageState extends State<RootPage> {
     const EssentialChecklistPage(),
     const EmergencyContactsPage(),
     const SettingsPage(),
-    const MapPage()
+    //const MapPage()
   ];
 
   @override
