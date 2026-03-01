@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/progress_provider.dart';
+import '../components/appbar.dart';
 //import 'package:test_project/essential_checklist_page.dart' as essential_checklist_page;
 ///import '../components/map.dart';
 class HomePage extends StatefulWidget {
@@ -20,11 +21,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
     final progress = context.watch<ProgressProvider>().progress;
     final currentColour=context.watch<ProgressProvider>().colour;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Home Page"),
-        centerTitle: false,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      ),
+      appBar: CustomAppBar(title: "Home"),
       body: Column(
         children: [
           SizedBox(height: 60,),
