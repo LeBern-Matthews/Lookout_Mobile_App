@@ -94,11 +94,10 @@ class _SettingsPageState extends State<SettingsPage> {
                       ? const Color.fromARGB(255, 255, 236, 209)
                       : const Color.fromARGB(255, 63, 43, 16);
                   return ExpansionTile(
-                    collapsedBackgroundColor: Colors.red[100],
                     controller: _countryController,
                     title: const Text("Country"),
                     subtitle: Text(selectedCountry),
-                    trailing: const Icon(Icons.arrow_drop_down_rounded),
+                    trailing: const Icon(Icons.arrow_drop_down_rounded, size: 40,),
                     children: countryOptions().map((country) {
                       final isSelected = selectedCountry == country;
 
