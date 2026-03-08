@@ -22,7 +22,7 @@ class themeButton extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(2),
           decoration: const BoxDecoration(
-            color: Colors.white,
+            color: Color.fromRGBO(255, 255, 255, 1),
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(

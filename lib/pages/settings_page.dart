@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../components/country_selector.dart'; // Add this import
 import 'package:provider/provider.dart';
-import '../components/themeButton.dart';
+import '../components/theme_button.dart';
 import '../themes/theme_provider.dart';
 import '../themes/light_mode.dart';
 import '../themes/dark_mode.dart';
@@ -38,12 +38,12 @@ class _SettingsPageState extends State<SettingsPage> {
                 "Theme",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              Text(_selectedTheme, style: TextStyle(fontSize: 14 ),),
+              Text(_selectedTheme, style: TextStyle(fontSize: 14)),
               SizedBox(height: 20),
               Row(
                 children: [
-
-                  themeButton(        // Light theme button
+                  themeButton(
+                    // Light theme button
                     label: 'Light',
                     icon: Icons.light_mode,
                     onPressed: () {
@@ -60,7 +60,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
                   const SizedBox(width: 10),
 
-                  themeButton(       // Dark theme button
+                  themeButton(
+                    // Dark theme button
                     label: 'Dark',
                     icon: Icons.dark_mode,
                     onPressed: () {
@@ -83,28 +84,69 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
 
               SizedBox(height: 30),
-              ExpansionTile(
-                collapsedBackgroundColor: Colors.red[100],
-                controller: _countryController,
-                title: const Text("Country"),
-                subtitle: Text(context.watch<CountryProvider>().country),
-                trailing: const Icon(Icons.arrow_drop_down_rounded),
-                children: countryOptions().map((country) {
-                  return ListTile(
-                    title: Text(country),
-                    onTap: () async {
-                      Provider.of<CountryProvider>(
-                        context,
-                        listen: false,
-                      ).setCountry(country);
-                      await Provider.of<CountryProvider>(
-                        context,
-                        listen: false,
-                      ).loadJsonData(country);
-                      _countryController.collapse();
-                    },
+              Consumer<CountryProvider>(
+                builder: (context, countryProvider, _) {
+                  final selectedCountry = countryProvider.country;
+                  final isLight =
+                      Theme.of(context).brightness == Brightness.light;
+                  final borderColor = const Color.fromARGB(255, 255, 157, 20);
+                  final cardColor = isLight
+                      ? const Color.fromARGB(255, 255, 236, 209)
+                      : const Color.fromARGB(255, 63, 43, 16);
+                  return ExpansionTile(
+                    collapsedBackgroundColor: Colors.red[100],
+                    controller: _countryController,
+                    title: const Text("Country"),
+                    subtitle: Text(selectedCountry),
+                    trailing: const Icon(Icons.arrow_drop_down_rounded),
+                    children: countryOptions().map((country) {
+                      final isSelected = selectedCountry == country;
+
+                      return SizedBox(
+                        width: double.infinity,
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            side: BorderSide(
+                              color: isSelected
+                                  ? borderColor
+                                  : Colors.transparent,
+                              width: 2,
+                            ),
+                          ),
+                          color: isSelected ? cardColor : null,
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 0,
+                            vertical: 4,
+                          ),
+                          child: InkWell(
+                            onTap: () async {
+                              Provider.of<CountryProvider>(
+                                context,
+                                listen: false,
+                              ).setCountry(country);
+                              await Provider.of<CountryProvider>(
+                                context,
+                                listen: false,
+                              ).loadJsonData(country);
+                              _countryController.collapse();
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0,
+                                vertical: 12.0,
+                              ),
+                              child: Text(
+                                country,
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
                   );
-                }).toList(),
+                },
               ),
             ],
           ),
