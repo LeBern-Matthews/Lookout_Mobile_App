@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 /// A reusable theme-selection button used in SettingsPage.
-class ThemeButton extends StatelessWidget {
+class themeButton extends StatelessWidget {
   final String label;
   final IconData icon;
   final VoidCallback onPressed;
   final Color? iconColor;
 
-  const ThemeButton({
+  const themeButton({
     super.key,
     required this.label,
     required this.icon,

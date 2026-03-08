@@ -43,7 +43,7 @@ class _SettingsPageState extends State<SettingsPage> {
               Row(
                 children: [
 
-                  ThemeButton(        // Light theme button
+                  themeButton(        // Light theme button
                     label: 'Light',
                     icon: Icons.light_mode,
                     onPressed: () {
@@ -60,7 +60,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
                   const SizedBox(width: 10),
 
-                  ThemeButton(       // Dark theme button
+                  themeButton(       // Dark theme button
                     label: 'Dark',
                     icon: Icons.dark_mode,
                     onPressed: () {

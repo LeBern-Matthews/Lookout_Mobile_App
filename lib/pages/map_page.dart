@@ -52,7 +52,7 @@ class _MapPageState extends State<MapPage> {
                     Marker(
             markerId: MarkerId("_targetLocation"),
             icon: BitmapDescriptor.defaultMarker,
-            position:_Georgetown
+            position:_georgetown
           ),
         },
           )
