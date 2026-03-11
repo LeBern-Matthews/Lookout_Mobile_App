@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/progress_provider.dart';
-import '../components/appbar.dart';
-
 
 import 'package:flutter/services.dart' show rootBundle;
 
@@ -52,7 +50,11 @@ class _EssentialChecklistPageState extends State<EssentialChecklistPage>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      appBar: CustomAppBar(title: "Essential Checklist"),
+      appBar: AppBar(
+        title: const Text("Essential Checklist"),
+        centerTitle: false,
+        backgroundColor:Theme.of(context).colorScheme.primary,
+      ),
       body: Column(
         children: [
           // Progress indicator at the top
