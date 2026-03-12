@@ -4,14 +4,14 @@ ThemeData darkmode = ThemeData(
   brightness: Brightness.dark,
   colorScheme: ColorScheme.dark(
     surface: const Color.fromRGBO(30, 30, 30, 1),
-    primary: const Color.fromRGBO(119, 147, 169, 1),
-    secondary: const Color.fromRGBO(83, 102, 118, 1),
+    primary: const Color.fromRGBO(31, 116, 223, 1),
+    secondary: const Color.fromRGBO(63, 43, 16, 1),
     tertiary: const Color.fromRGBO(84, 83, 51, 1),
     onSurface: Colors.white,
     onPrimary: Colors.white,
     onSecondary: Colors.white,
   ),
-  scaffoldBackgroundColor: const Color.fromRGBO(18, 18, 18, 1),
+  scaffoldBackgroundColor: const Color.fromRGBO(30, 30, 30, 1),
   appBarTheme: const AppBarTheme(
     backgroundColor: Color.fromRGBO(30, 30, 30, 1),
     foregroundColor: Colors.white,

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:lookout/components/calling_button.dart';
 import 'package:provider/provider.dart';
 import '../services/country_provider.dart';
+import '../components/appbar.dart';
+
 
 
 class EmergencyContactsPage extends StatefulWidget {
@@ -25,10 +27,7 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
   
 
   return Scaffold(
-    appBar: AppBar(title: Text("Emergency contacts"),
-      centerTitle: false,
-      backgroundColor: Theme.of(context).colorScheme.primary,
-    ),
+    appBar: CustomAppBar(title:"Emergency Contacts"),
     body: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

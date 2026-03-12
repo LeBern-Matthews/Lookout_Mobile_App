@@ -93,23 +93,6 @@ A mobile app built with Dart and the Flutter framework for hurricane preparednes
 - Updates global variables for weather display
 - Handles both online and offline scenarios using cached data
 
-Additional Functions:
-
-`get_essentials()`
-- Returns a list of essential items for hurricane preparedness
-- Reads from essetial_items.txt file
-
-`country_options()`
-- Returns a list of supported countries
-- Used for the location dropdown menu
-
-`check_month(number: str)`
-- Converts numeric month to month name
-- Used for formatting dates in weather updates
-
-`center_window(window)`
-- Centers the application window on the screen
-
 ## Dependencies
 
 1. Internet_connection_checker [check it out here](https://pub.dev/packages/internet_connection_checker)
