@@ -93,57 +93,85 @@ class _SettingsPageState extends State<SettingsPage> {
                   final cardColor = isLight
                       ? const Color.fromARGB(255, 255, 236, 209)
                       : const Color.fromARGB(255, 63, 43, 16);
+                  final expansionLightColor = const Color.fromARGB(255,210,207,202,);
+                  final expansionDarkColor = const Color.fromRGBO(35,32,33,1,);
+                  final expansionBg = isLight
+                      ? expansionLightColor
+                      : expansionDarkColor;
+
+                  final scaffoldBg = Theme.of(context).scaffoldBackgroundColor;
+
                   return ExpansionTile(
+                    childrenPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    backgroundColor: expansionBg,
+                    collapsedBackgroundColor: scaffoldBg,
                     controller: _countryController,
                     title: const Text("Country"),
                     subtitle: Text(selectedCountry),
-                    trailing: const Icon(Icons.arrow_drop_down_rounded, size: 40,),
-                    children: countryOptions().map((country) {
-                      final isSelected = selectedCountry == country;
+                    trailing: const Icon(
+                      Icons.arrow_drop_down_rounded,
+                      size: 40,
+                    ),
+                    children: [
+                      Container(
+                        color: expansionBg,
+                        child: Column(
+                          children: countryOptions().map((country) {
+                            final isSelected = selectedCountry == country;
 
-                      return SizedBox(
-                        width: double.infinity,
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            side: BorderSide(
-                              color: isSelected
-                                  ? borderColor
-                                  : Colors.transparent,
-                              width: 2,
-                            ),
-                          ),
-                          color: isSelected ? cardColor : null,
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 0,
-                            vertical: 4,
-                          ),
-                          child: InkWell(
-                            onTap: () async {
-                              Provider.of<CountryProvider>(
-                                context,
-                                listen: false,
-                              ).setCountry(country);
-                              await Provider.of<CountryProvider>(
-                                context,
-                                listen: false,
-                              ).loadJsonData(country);
-                              _countryController.collapse();
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0,
-                                vertical: 12.0,
+                            return SizedBox(
+                              width: double.infinity,
+                              child: Card(
+                                elevation: 1,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  side: BorderSide(
+                                    color: isSelected
+                                        ? borderColor
+                                        : Colors.transparent,
+                                    width: 2,
+                                  ),
+                                ),
+                                color: isSelected ? cardColor : null,
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 0,
+                                  vertical: 6,
+                                ),
+                                child: InkWell(
+                                  onTap: () async {
+                                    Provider.of<CountryProvider>(
+                                      context,
+                                      listen: false,
+                                    ).setCountry(country);
+                                    await Provider.of<CountryProvider>(
+                                      context,
+                                      listen: false,
+                                    ).loadJsonData(country);
+                                    await Future.delayed(
+                                      const Duration(milliseconds: 250),
+                                    );
+                                    _countryController.collapse();
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16.0,
+                                      vertical: 12.0,
+                                    ),
+                                    child: Text(
+                                      country,
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                  ),
+                                ),
                               ),
-                              child: Text(
-                                country,
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                            ),
-                          ),
+                            );
+                          }).toList(),
                         ),
-                      );
-                    }).toList(),
+                      ),
+                    ],
                   );
                 },
               ),

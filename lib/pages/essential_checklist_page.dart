@@ -70,7 +70,8 @@ class _EssentialChecklistPageState extends State<EssentialChecklistPage>
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
                   title: Text(_items[index]),
-                  leading: Icon(
+                  selected: _isChecked[index],
+                  trailing: Icon(
                     _isChecked[index]
                         ? Icons.check_box_rounded
                         : Icons.check_box_outline_blank_rounded,

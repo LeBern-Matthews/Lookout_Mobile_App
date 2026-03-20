@@ -10,7 +10,9 @@ ThemeData darkmode = ThemeData(
     onSurface: Colors.white,
     onPrimary: Colors.white,
     onSecondary: Colors.white,
+
   ),
+  cardColor: const Color.fromRGBO(255,15,15, 1),
   scaffoldBackgroundColor: const Color.fromRGBO(30, 30, 30, 1),
   appBarTheme: const AppBarTheme(
     backgroundColor: Color.fromRGBO(30, 30, 30, 1),
