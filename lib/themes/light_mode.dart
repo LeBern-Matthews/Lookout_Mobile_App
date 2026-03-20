@@ -12,15 +12,20 @@ ThemeData lightmode = ThemeData(
     primary: const Color.fromRGBO(31, 116, 223, 1),
     surface: const Color.fromRGBO(238,237,233, 1),
    secondary: const Color.fromARGB(255, 209, 228, 255),
-  ),listTileTheme: ListTileThemeData(
-    //tileColor: const Color.fromARGB(255, 255, 236, 209),
-    selectedTileColor: const Color.fromARGB(255, 255, 236, 209),
-    iconColor: Colors.orange,
   ),
- // cardColor:  Colors.red,
+  
+  
+  listTileTheme: ListTileThemeData(
+    
+    tileColor:  Colors.white,
+    selectedTileColor:  Color.fromARGB(255,245, 244, 242),
+    selectedColor: Color.fromARGB(254, 147, 146, 144)
+    //iconColor: Colors.orange,
+    //selectedTileColor: Color.fromARGB(255,210,207,202,)
+  ),
   
   cardTheme: CardThemeData(
-    color:const Color.fromARGB(255, 255, 255, 255),
+    color:const Color.fromARGB(255,210,207,202,),
   ),
 
 

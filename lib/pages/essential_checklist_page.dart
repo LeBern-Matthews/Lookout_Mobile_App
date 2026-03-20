@@ -66,22 +66,32 @@ class _EssentialChecklistPageState extends State<EssentialChecklistPage>
           // Expanded ListView for the checklist items
           Expanded(
             child: ListView.builder(
+              //padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
               itemCount: _items.length,
               itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  title: Text(_items[index]),
-                  selected: _isChecked[index],
-                  trailing: Icon(
-                    _isChecked[index]
-                        ? Icons.check_box_rounded
-                        : Icons.check_box_outline_blank_rounded,
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+                  child: ListTile(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  //contentPadding: const EdgeInsets.symmetric(horizontal: 16,),
+                    //tileColor: tileColor,
+                    title: Text(_items[index]),
+                    selected: _isChecked[index],
+                    trailing: Icon(
+                      _isChecked[index]
+                          ? Icons.check_box_rounded
+                          : Icons.check_box_outline_blank_rounded,
+                    ),
+                    onTap: () {
+                      setState(() {
+                        _isChecked[index] = !_isChecked[index];
+                      });
+                      __fillProgressBar();
+                    },
                   ),
-                  onTap: () {
-                    setState(() {
-                      _isChecked[index] = !_isChecked[index];
-                    });
-                    __fillProgressBar();
-                  },
                 );
               },
             ),

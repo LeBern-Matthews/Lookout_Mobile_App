@@ -12,8 +12,14 @@ ThemeData darkmode = ThemeData(
     onSecondary: Colors.white,
 
   ),
-  cardColor: const Color.fromRGBO(255,15,15, 1),
-  scaffoldBackgroundColor: const Color.fromRGBO(30, 30, 30, 1),
+  //cardColor: const Color.fromRGBO(255,15,15, 1),
+  //scaffoldBackgroundColor: const Color.fromRGBO(30, 30, 30, 1),
+  //scaffoldBackgroundColor: const Color.fromRGBO(30, 30, 30, 1),
+
+   cardTheme: CardThemeData(
+    color:const Color.fromRGBO(30, 30, 30, 1),
+
+  ),
   appBarTheme: const AppBarTheme(
     backgroundColor: Color.fromRGBO(30, 30, 30, 1),
     foregroundColor: Colors.white,
@@ -28,18 +34,22 @@ ThemeData darkmode = ThemeData(
   iconTheme: const IconThemeData(
     color: Colors.white,
   ),
+  
   listTileTheme: const ListTileThemeData(
     textColor: Colors.white,
     iconColor: Colors.white,
-    tileColor: Color.fromRGBO(30, 30, 30, 1),
+    tileColor: Color.fromARGB(255, 24, 24, 24),
+    selectedTileColor: Color.fromARGB(255, 40, 40, 40),
+    selectedColor: Color.fromARGB(223, 96, 96, 96)
   ),
+
   expansionTileTheme: const ExpansionTileThemeData(
     textColor: Colors.white,
     iconColor: Colors.white,
     collapsedTextColor: Colors.white,
     collapsedIconColor: Colors.white,
-    backgroundColor: Color.fromRGBO(30, 30, 30, 1),
-    collapsedBackgroundColor: Color.fromRGBO(30, 30, 30, 1),
+    //backgroundColor: Color.fromRGBO(30, 30, 30, 1),
+    //collapsedBackgroundColor: Color.fromRGBO(30, 30, 30, 1),
   ),
   navigationBarTheme: NavigationBarThemeData(
     backgroundColor: const Color.fromRGBO(30, 30, 30, 1),

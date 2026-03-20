@@ -93,21 +93,36 @@ class _SettingsPageState extends State<SettingsPage> {
                   final cardColor = isLight
                       ? const Color.fromARGB(255, 255, 236, 209)
                       : const Color.fromARGB(255, 63, 43, 16);
+                      /*
                   final expansionLightColor = const Color.fromARGB(255,210,207,202,);
                   final expansionDarkColor = const Color.fromRGBO(35,32,33,1,);
                   final expansionBg = isLight
                       ? expansionLightColor
                       : expansionDarkColor;
+                      */
+                  final scaffoldBg = Theme.of(context).listTileTheme.tileColor;
 
-                  final scaffoldBg = Theme.of(context).scaffoldBackgroundColor;
-
+                  //final scaffoldBg = Theme.of(context).scaffoldBackgroundColor;
+                  //final scaffoldBg = Colors.red;
                   return ExpansionTile(
+                    //shape control
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    collapsedShape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+
+                    //padding control
                     childrenPadding: const EdgeInsets.symmetric(
                       horizontal: 12,
                       vertical: 8,
                     ),
-                    backgroundColor: expansionBg,
-                    collapsedBackgroundColor: scaffoldBg,
+
+                    //color control
+                    backgroundColor: scaffoldBg,
+                    //collapsedBackgroundColor: scaffoldBg,
+                    
                     controller: _countryController,
                     title: const Text("Country"),
                     subtitle: Text(selectedCountry),
@@ -117,7 +132,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                     children: [
                       Container(
-                        color: expansionBg,
+                        color: scaffoldBg,
                         child: Column(
                           children: countryOptions().map((country) {
                             final isSelected = selectedCountry == country;
