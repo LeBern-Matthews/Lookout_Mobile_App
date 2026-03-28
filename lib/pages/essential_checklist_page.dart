@@ -1,100 +1,96 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../services/progress_provider.dart';
+import '../services/checklist_provider.dart';
 import '../components/appbar.dart';
 
-
-import 'package:flutter/services.dart' show rootBundle;
-
-class EssentialChecklistPage extends StatefulWidget {
+class EssentialChecklistPage extends StatelessWidget {
   const EssentialChecklistPage({super.key});
 
   @override
-  State<EssentialChecklistPage> createState() => _EssentialChecklistPageState();
-}
-
-class _EssentialChecklistPageState extends State<EssentialChecklistPage>
-    with AutomaticKeepAliveClientMixin {
-  final List<String> _items = []; // List to store items from the text file
-  final List<bool> _isChecked = []; // List to track checked states
-  double progress = 0.0; // Progress value
-
-  @override
-  bool get wantKeepAlive => true; // Preserve state
-
-  @override
-  void initState() {
-    super.initState();
-    _loadItemsFromFile();
-  }
-
-  Future<void> _loadItemsFromFile() async {
-    
-    final String fileContent = await rootBundle.loadString('lib/assets/emergencyinfo.txt');
-    final List<String> lines = fileContent.split('\n').map((line) => line.trim()).toList();
-
-    setState(() {
-      _items.addAll(lines);
-      _isChecked.addAll(List.generate(lines.length, (index) => false));
-    });
-  }
-
-  void __fillProgressBar() {
-    setState(() {
-      // Calculate progress based on the number of checked items
-      final int checkedCount = _isChecked.where((isChecked) => isChecked).length;
-      progress = _items.isNotEmpty ? checkedCount / _items.length : 0.0;
-      Provider.of<ProgressProvider>(context, listen: false).setProgress(progress);
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    super.build(context);
+    final checklist = context.watch<ChecklistProvider>();
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+
     return Scaffold(
       appBar: CustomAppBar(title: "Essential Checklist"),
       body: Column(
         children: [
-          // Progress indicator at the top
+          // ── Progress header ─────────────────────────────────────────
           Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              "${(progress * 100).toInt()}% Complete",
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "${checklist.checkedCount} of ${checklist.totalCount} complete",
+                      style: const TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      "${(checklist.progress * 100).toInt()}%",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: checklist.colour,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: LinearProgressIndicator(
+                    value: checklist.progress,
+                    minHeight: 10,
+                    backgroundColor: onSurface.withValues(alpha:  0.12),
+                    valueColor: AlwaysStoppedAnimation(checklist.colour),
+                  ),
+                ),
+              ],
             ),
           ),
-          // Expanded ListView for the checklist items
-          Expanded(
-            child: ListView.builder(
-              //padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
-              itemCount: _items.length,
-              itemBuilder: (BuildContext context, int index) {
 
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-                  child: ListTile(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  //contentPadding: const EdgeInsets.symmetric(horizontal: 16,),
-                    //tileColor: tileColor,
-                    title: Text(_items[index]),
-                    selected: _isChecked[index],
-                    trailing: Icon(
-                      _isChecked[index]
-                          ? Icons.check_box_rounded
-                          : Icons.check_box_outline_blank_rounded,
-                    ),
-                    onTap: () {
-                      setState(() {
-                        _isChecked[index] = !_isChecked[index];
-                      });
-                      __fillProgressBar();
+          // ── Checklist ───────────────────────────────────────────────
+          Expanded(
+            child: !checklist.isLoaded
+                ? const Center(child: CircularProgressIndicator())
+                : ListView.builder(
+                    itemCount: checklist.items.length,
+                    itemBuilder: (context, index) {
+                      final checked = checklist.isChecked[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12.0, vertical: 5.0),
+                        child: ListTile(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          title: Text(
+                            checklist.items[index],
+                            style: TextStyle(
+                              decoration: checked
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                              color: checked
+                                  ? onSurface.withValues(alpha: 0.4)
+                                  : onSurface,
+                            ),
+                          ),
+                          selected: checked,
+                          trailing: Icon(
+                            checked
+                                ? Icons.check_box_rounded
+                                : Icons.check_box_outline_blank_rounded,
+                            color: checked ? checklist.colour : null,
+                          ),
+                          onTap: () =>
+                              context.read<ChecklistProvider>().toggleItem(index),
+                        ),
+                      );
                     },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),
