@@ -39,6 +39,7 @@ dependencies:
   internet_connection_checker: ^3.0.1
   google_maps_flutter: ^2.14.0
   location: ^8.0.1
+  shared_preferences: ^2.5.5
 
 dev_dependencies:
   flutter_test:

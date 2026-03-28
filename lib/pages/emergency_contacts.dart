@@ -58,7 +58,7 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
                 children: [
                   Text("Ambulance: ${ambulanceNum.isNotEmpty ? ambulanceNum : 'Not available'}", style: TextStyle(fontSize: 20)),
                   Spacer(),
-                  CallingButton(phoneNumber: fireNum, callee: "Ambulance"),
+                  CallingButton(phoneNumber: ambulanceNum, callee: "Ambulance"),
                 ],
               ),
           
@@ -67,7 +67,7 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
                 children: [
                   Text("Fire Department: ${fireNum.isNotEmpty ? fireNum : 'Not available'}", style: TextStyle(fontSize: 20)),
                   Spacer(),
-                  CallingButton(phoneNumber: ambulanceNum, callee: "Fire")
+                  CallingButton(phoneNumber: fireNum, callee: "Fire")
                 ],
               ),
               SizedBox(height: 60),
