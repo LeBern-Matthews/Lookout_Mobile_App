@@ -6,6 +6,7 @@ import '../themes/theme_provider.dart';
 import '../themes/light_mode.dart';
 import '../themes/dark_mode.dart';
 import '../services/country_provider.dart';
+import '../services/custom_contacts_provider.dart';
 //import '../services/determine_country_info.dart';
 import '../components/appbar.dart'; // code for custom AppBar
 
@@ -107,10 +108,10 @@ class _SettingsPageState extends State<SettingsPage> {
                   return ExpansionTile(
                     //shape control
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(18),
                     ),
                     collapsedShape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(18),
                     ),
 
                     //padding control
@@ -190,6 +191,45 @@ class _SettingsPageState extends State<SettingsPage> {
                   );
                 },
               ),
+
+              // ── Contacts section ──────────────────────────────────────
+              const SizedBox(height: 10),
+              Divider(
+                color: const Color.fromARGB(255, 188, 177, 177),
+                thickness: 1.5,
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Contacts',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'Customise how your saved contacts are displayed.',
+                style: TextStyle(fontSize: 14),
+              ),
+              const SizedBox(height: 16),
+              Consumer<CustomContactsProvider>(
+                builder: (context, contactsP, _) {
+                  return SwitchListTile(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    title: const Text(
+                      'Show Contact Categories',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    subtitle: const Text(
+                      'Display a category label under each custom contact\'s name.',
+                    ),
+                    value: contactsP.showCategories,
+                    onChanged: (val) =>
+                        contactsP.setShowCategories(val),
+                  );
+                },
+              ),
+              const SizedBox(height: 20),
             ],
           ),
         ),

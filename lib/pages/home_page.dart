@@ -72,7 +72,7 @@ class _HomePageState extends State<HomePage>
     final primary = Theme.of(context).colorScheme.primary;
     final surface = Theme.of(context).colorScheme.surface;
     final onSurface = Theme.of(context).colorScheme.onSurface;
-    final cardBg = isLight ? Colors.white : const Color(0xFF1A1A2E);
+    final cardBg = isLight ? Colors.white : const Color.fromARGB(255, 24, 24, 24);
     final cardShadow = isLight
         ? [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 12, offset: const Offset(0, 3))]
         : [BoxShadow(color: Colors.black.withValues(alpha: 0.4), blurRadius: 12, offset: const Offset(0, 3))];

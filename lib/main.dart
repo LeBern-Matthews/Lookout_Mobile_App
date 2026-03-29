@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'services/country_provider.dart';
 import 'services/checklist_provider.dart';
+import 'services/custom_contacts_provider.dart';
 import 'pages/emergency_contacts.dart';
 import 'pages/essential_checklist_page.dart';
 import 'pages/home_page.dart';
@@ -21,6 +22,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => CountryProvider()),
         ChangeNotifierProvider(create: (_) => ChecklistProvider()),
+        ChangeNotifierProvider(create: (_) => CustomContactsProvider()),
       ],
       child: const MyApp(),
     ),
@@ -66,6 +68,7 @@ class _RootPageState extends State<RootPage> {
     // Load checklist items + restore saved state as soon as the app starts
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ChecklistProvider>().loadItems();
+      context.read<CustomContactsProvider>().loadContacts();
     });
   }
 
