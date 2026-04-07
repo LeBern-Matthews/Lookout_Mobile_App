@@ -1,5 +1,5 @@
 # LookOut App
-A mobile app built with Dart and the Flutter framework for hurricane preparedness
+A mobile app built with Dart and the Flutter framework for hurricane and emergency preparedness.
 
 
 ## Table of contents
@@ -9,92 +9,71 @@ A mobile app built with Dart and the Flutter framework for hurricane preparednes
 
 [Usage](#usage)
 
-[Functions](#functions)
+[Architecture](#architecture)
 
 [Dependencies](#dependencies)
 
 ## Features
-### 1. Home Page:
-- Displays a "Prepared-o-meter" to track your readiness.
-- A weather update section to provide real-time weather alerts (future implementation).
-- A map that shows the location of the nearest hospitals, clinics, and emergency centers
+### 1. Home Page
+- Displays a **"Prepared-o-meter"** progress bar that tracks your overall readiness based on checked-off supplies.
+- Quick-access shortcuts to navigate directly to the Checklist and Contacts pages.
+- Connectivity popup that alerts you when your internet connection drops or is restored.
+
 ### 2. Checklist Page
 - A detailed list of essential supplies for emergencies.
 - Interactive checkboxes to track the items you have prepared.
-- The progress bar updates as you check off items.
+- Progress is **persisted** across app sessions using SharedPreferences.
 
-### 3. Emergency Contact Page
-- Automatically fetches and displays emergency contacts (police, ambulance, fire department) based on your location.
-- Supports multiple contacts for each service.
+### 3. Emergency Contacts Page
+- Displays emergency contacts (police, ambulance, fire department) for your selected country.
+- Supports adding and managing **custom contacts** that persist across sessions.
+- Tap a number to call directly using the device dialer.
 
 ### 4. Settings Page
-- Theme Selection (Dark and Light)
-- Country selection for when the device is not connected to the internet
+- **Theme Selection** — toggle between Dark and Light mode.
+- **Country Selection** — manually set your country for emergency contact lookups.
 
 ### 5. Navigation Bar
-- An intuitive navigation bar allows easy switching between pages.
-- Specify which page is currently on
+- A bottom navigation bar for switching between all four pages.
+- Smooth **shared-axis page transitions** powered by the `animations` package.
+
+### 6. Map (Coming Soon)
+- A map view showing the locations of nearby hospitals, clinics, and emergency centers is planned for a future release.
 
 ## Instructions
-1. Download and set up the Flutter SDK
-2. Clone this repository and run the app
-   
+1. Download and set up the [Flutter SDK](https://docs.flutter.dev/get-started/install)
+2. Clone this repository
+3. Run `flutter pub get` to install dependencies
+4. Run `flutter run` to launch the app on a connected device or emulator
+
 ## Usage
-1. Open the mobile app on your phone or an emulator
-   
-2. The app will detect your public IP and automatically determine your country using an IP geolocation service(future impementation)
-   
-3. Navigate through the app using the buttons in the navigation bar
-    - Home Button: View your preparedness progress and weather updates
-    - Checklist Button: Access and interact with the checklist of essential supplies
-    - Contacts Button: View emergency contact information for your country
-    -Settings Button: Change your theme and select your country
+1. Open the app on your phone or an emulator.
 
+2. Use the **Settings** page to select your country if you are not connected to the internet.
 
-## Functions
+3. Navigate through the app using the bottom navigation bar:
+    - **Home** — View your preparedness progress
+    - **Checklist** — Check off your essential emergency supplies
+    - **Contacts** — View and call emergency contacts for your country, or add custom ones
+    - **Settings** — Change your theme and select your country
 
-`main()`
-- The main function that initializes and runs the application
-- Sets up the window title, size, and icon
-- Makes the window non-resizable and centers it on screen
+## Architecture
 
-`layout()`
-- Creates the entire layout of the application
-- Sets up four main frames: home, checklist, contacts, and settings
-- Configures the navigation bar and theme settings
+The app uses the **Provider** pattern for state management across four main providers:
 
-`getcountry(IP: str)`
-- Takes a public IP address as input
-- Returns location information including country name, latitude, and longitude
-- Uses the apiip.net service for geolocation
+- `ThemeProvider` — manages light/dark theme state
+- `CountryProvider` — manages the selected country for emergency contacts
+- `ChecklistProvider` — manages checklist items and persists state with SharedPreferences
+- `CustomContactsProvider` — manages user-added custom contacts and persists them with SharedPreferences
 
-`emergency_contacts(Country_name: str)`
-- Retrieves emergency contact information for a specific country
-- Returns a dictionary containing police, ambulance, and fire department numbers
-- Sources data from country_data.json
-
-`has_internet_connection()`
-- Checks if the device has an active internet connection
-- Returns True if connected, False otherwise
-- Tests connection by attempting to reach Google's DNS (8.8.8.8)
-
-`weather_status(location_info: dict)`
-- Gets current weather information based on latitude and longitude
-- Returns weather conditions, temperature, and description
-- Uses OpenWeatherMap API for weather data
-
-`getIP()`
-- Gets the device's public IP address
-- Returns the IP address as a string
-- Uses the public_ip library
-
-`weather_stuff()`
-- Combines multiple functions to get complete weather information
-- Updates global variables for weather display
-- Handles both online and offline scenarios using cached data
+Page transitions are handled by `PageTransitionSwitcher` with a `SharedAxisTransition` (horizontal) from the `animations` package.
 
 ## Dependencies
 
-1. Internet_connection_checker [check it out here](https://pub.dev/packages/internet_connection_checker)
-2. Url_launcher [check it out here](https://pub.dev/packages/url_launcher)
-3. Google_maps_flutter [check it out here](https://pub.dev/packages/google_maps_flutter) currently in testing for the map feature
+1. [provider](https://pub.dev/packages/provider) — State management
+2. [shared_preferences](https://pub.dev/packages/shared_preferences) — Persistent local storage for checklist and custom contacts
+3. [internet_connection_checker](https://pub.dev/packages/internet_connection_checker) — Monitors internet connectivity
+4. [url_launcher](https://pub.dev/packages/url_launcher) — Opens phone dialer for emergency contact calls
+5. [animations](https://pub.dev/packages/animations) — Smooth page transition animations
+6. [location](https://pub.dev/packages/location) — Device location access (for future map feature)
+7. [google_maps_flutter](https://pub.dev/packages/google_maps_flutter) — Google Maps integration (planned for upcoming map feature)

@@ -6,6 +6,31 @@ import '../components/appbar.dart';
 class EssentialChecklistPage extends StatelessWidget {
   const EssentialChecklistPage({super.key});
 
+  Widget _buildItem(BuildContext context, ChecklistProvider checklist, int index, Color onSurface) {
+    final checked = checklist.isChecked[index];
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
+      child: ListTile(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        title: Text(
+          checklist.items[index],
+          style: TextStyle(
+            decoration: checked ? TextDecoration.lineThrough : null,
+            color: checked ? onSurface.withValues(alpha: 0.4) : onSurface,
+          ),
+        ),
+        selected: checked,
+        trailing: Icon(
+          checked ? Icons.check_box_rounded : Icons.check_box_outline_blank_rounded,
+          color: checked ? checklist.colour : null,
+        ),
+        onTap: () => checklist.toggleItem(index),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final checklist = context.watch<ChecklistProvider>();
@@ -44,7 +69,7 @@ class EssentialChecklistPage extends StatelessWidget {
                   child: LinearProgressIndicator(
                     value: checklist.progress,
                     minHeight: 10,
-                    backgroundColor: onSurface.withValues(alpha:  0.12),
+                    backgroundColor: onSurface.withValues(alpha: 0.12),
                     valueColor: AlwaysStoppedAnimation(checklist.colour),
                   ),
                 ),
@@ -56,40 +81,63 @@ class EssentialChecklistPage extends StatelessWidget {
           Expanded(
             child: !checklist.isLoaded
                 ? const Center(child: CircularProgressIndicator())
-                : ListView.builder(
-                    itemCount: checklist.items.length,
-                    itemBuilder: (context, index) {
-                      final checked = checklist.isChecked[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12.0, vertical: 5.0),
-                        child: ListTile(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                : ListView(
+                    children: [
+                      // To-do Section
+                      for (int i = 0; i < checklist.items.length; i++)
+                        AnimatedCrossFade(
+                          key: ValueKey('cross_todo_$i'),
+                          duration: const Duration(milliseconds: 350),
+                          sizeCurve: Curves.easeInOut,
+                          crossFadeState: !checklist.isChecked[i]
+                              ? CrossFadeState.showFirst
+                              : CrossFadeState.showSecond,
+                          firstChild: KeyedSubtree(
+                            key: ValueKey('todo_$i'),
+                            child: _buildItem(context, checklist, i, onSurface),
                           ),
-                          title: Text(
-                            checklist.items[index],
+                          secondChild: const SizedBox(width: double.infinity, height: 0),
+                        ),
+
+                      // Completed Header
+                      AnimatedCrossFade(
+                        duration: const Duration(milliseconds: 300),
+                        crossFadeState: checklist.checkedCount > 0
+                            ? CrossFadeState.showFirst
+                            : CrossFadeState.showSecond,
+                        firstChild: Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+                          child: Text(
+                            'COMPLETED (${checklist.checkedCount})',
                             style: TextStyle(
-                              decoration: checked
-                                  ? TextDecoration.lineThrough
-                                  : null,
-                              color: checked
-                                  ? onSurface.withValues(alpha: 0.4)
-                                  : onSurface,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.5,
+                              color: onSurface.withValues(alpha: 0.5),
                             ),
                           ),
-                          selected: checked,
-                          trailing: Icon(
-                            checked
-                                ? Icons.check_box_rounded
-                                : Icons.check_box_outline_blank_rounded,
-                            color: checked ? checklist.colour : null,
-                          ),
-                          onTap: () =>
-                              context.read<ChecklistProvider>().toggleItem(index),
                         ),
-                      );
-                    },
+                        secondChild: const SizedBox(width: double.infinity, height: 0),
+                      ),
+
+                      // Completed Section
+                      for (int i = 0; i < checklist.items.length; i++)
+                        AnimatedCrossFade(
+                          key: ValueKey('cross_done_$i'),
+                          duration: const Duration(milliseconds: 350),
+                          sizeCurve: Curves.easeInOut,
+                          crossFadeState: checklist.isChecked[i]
+                              ? CrossFadeState.showFirst
+                              : CrossFadeState.showSecond,
+                          firstChild: KeyedSubtree(
+                            key: ValueKey('done_$i'),
+                            child: _buildItem(context, checklist, i, onSurface),
+                          ),
+                          secondChild: const SizedBox(width: double.infinity, height: 0),
+                        ),
+                      
+                      const SizedBox(height: 24), // Bottom padding
+                    ],
                   ),
           ),
         ],

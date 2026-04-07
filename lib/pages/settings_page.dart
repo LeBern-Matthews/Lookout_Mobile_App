@@ -84,6 +84,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 thickness: 1.5,
               ),
 
+// ── Country selection section ──────────────────────────────────────
+
               SizedBox(height: 30),
               Consumer<CountryProvider>(
                 builder: (context, countryProvider, _) {

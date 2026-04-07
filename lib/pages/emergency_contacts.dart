@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../services/country_provider.dart';
 import '../services/custom_contacts_provider.dart';
 import '../components/appbar.dart';
+import '../components/emergency_components.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Page
@@ -63,6 +64,7 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor, // solid, non-translucent color
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -85,14 +87,14 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 20),
-              _SheetField(
+              SheetField(
                 controller: _nameCtrl,
                 label: 'Name',
                 icon: Icons.person_outline_rounded,
                 inputType: TextInputType.name,
               ),
               const SizedBox(height: 12),
-              _SheetField(
+              SheetField(
                 controller: _phoneCtrl,
                 label: 'Phone number',
                 icon: Icons.phone_outlined,
@@ -100,7 +102,7 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
               ),
               if (showCategories) ...[
                 const SizedBox(height: 12),
-                _SheetField(
+                SheetField(
                   controller: _categoryCtrl,
                   label: 'Category (optional)',
                   icon: Icons.label_outline_rounded,
@@ -191,12 +193,12 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // ── National numbers card ──────────────────────────────────
-            _SectionLabel(
+            SectionLabel(
               label: 'NATIONAL EMERGENCY NUMBERS',
               onSurface: onSurface,
             ),
             const SizedBox(height: 8),
-            _Card(
+            EmergencyCard(
               bg: cardBg,
               shadows: cardShadow,
               child: Column(
@@ -225,7 +227,7 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
                   Divider(height: 20, color: onSurface.withValues(alpha: 0.1)),
 
                   // Police rows
-                  _ServiceSection(
+                  ServiceSection(
                     icon: Icons.local_police_rounded,
                     label: 'Police',
                     numbers: countryP.policeNumbers,
@@ -234,10 +236,10 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
                     onSurface: onSurface,
                   ),
 
-                  _ServiceDivider(onSurface: onSurface),
+                  ServiceDivider(onSurface: onSurface),
 
                   // Ambulance rows
-                  _ServiceSection(
+                  ServiceSection(
                     icon: Icons.local_hospital_rounded,
                     label: 'Ambulance',
                     numbers: countryP.ambulanceNumbers,
@@ -246,10 +248,10 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
                     onSurface: onSurface,
                   ),
 
-                  _ServiceDivider(onSurface: onSurface),
+                  ServiceDivider(onSurface: onSurface),
 
                   // Fire rows
-                  _ServiceSection(
+                  ServiceSection(
                     icon: Icons.local_fire_department_rounded,
                     label: 'Fire Dept.',
                     numbers: countryP.fireNumbers,
@@ -270,7 +272,7 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _SectionLabel(
+                      SectionLabel(
                         label: 'MY CONTACTS',
                         onSurface: onSurface,
                       ),
@@ -298,7 +300,7 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
             const SizedBox(height: 8),
 
             if (contactsP.contacts.isEmpty)
-              _Card(
+              EmergencyCard(
                 bg: cardBg,
                 shadows: cardShadow,
                 child: Center(
@@ -333,7 +335,7 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
                 ),
               )
             else
-              _Card(
+              EmergencyCard(
                 bg: cardBg,
                 shadows: cardShadow,
                 child: Column(
@@ -352,8 +354,7 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
                               color: Colors.red.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: const Icon(
-                              Icons.delete_rounded,
+                            child: const JigglingTrashIcon(
                               color: Colors.red,
                             ),
                           ),
@@ -364,7 +365,7 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
                             onTap: () =>
                                 _showContactSheet(context, showCategories, i),
                             borderRadius: BorderRadius.circular(10),
-                            child: _CustomContactRow(
+                            child: CustomContactRow(
                               contact: contact,
                               showCategory: showCategories,
                               onCall: _call,
@@ -384,269 +385,6 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
                 ),
               ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  Private widgets
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _SectionLabel extends StatelessWidget {
-  final String label;
-  final Color onSurface;
-  const _SectionLabel({required this.label, required this.onSurface});
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      label,
-      style: TextStyle(
-        fontSize: 11,
-        fontWeight: FontWeight.w700,
-        letterSpacing: 1.5,
-        color: onSurface.withValues(alpha: 0.4),
-      ),
-    );
-  }
-}
-
-class _Card extends StatelessWidget {
-  final Widget child;
-  final Color bg;
-  final List<BoxShadow> shadows;
-  const _Card({required this.child, required this.bg, required this.shadows});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: shadows,
-      ),
-      child: child,
-    );
-  }
-}
-
-class _ServiceDivider extends StatelessWidget {
-  final Color onSurface;
-  const _ServiceDivider({required this.onSurface});
-
-  @override
-  Widget build(BuildContext context) {
-    return Divider(height: 20, color: onSurface.withValues(alpha: 0.08));
-  }
-}
-
-/// Shows the service name + icon, then one call row per number.
-class _ServiceSection extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final List<String> numbers;
-  final Color iconColor;
-  final Future<void> Function(String) onCall;
-  final Color onSurface;
-
-  const _ServiceSection({
-    required this.icon,
-    required this.label,
-    required this.numbers,
-    required this.iconColor,
-    required this.onCall,
-    required this.onSurface,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final effectiveNumbers = numbers.isEmpty
-        ? <String>['Not available']
-        : numbers;
-    final bool unavailable =
-        numbers.isEmpty ||
-        (numbers.length == 1 && numbers.first == 'Not available');
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Service header row (icon + label)
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: iconColor.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(icon, color: iconColor, size: 20),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              label,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
-            ),
-            if (effectiveNumbers.length > 1)
-              Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 7,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: iconColor.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    '${effectiveNumbers.length}',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: iconColor,
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-        // One row per number
-        ...effectiveNumbers.map(
-          (number) => Padding(
-            padding: const EdgeInsets.only(top: 10, left: 4),
-            child: Row(
-              children: [
-                const SizedBox(width: 38), // aligns with label text
-                Expanded(
-                  child: Text(
-                    number,
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: unavailable
-                          ? onSurface.withValues(alpha: 0.35)
-                          : onSurface.withValues(alpha: 0.75),
-                    ),
-                  ),
-                ),
-                if (!unavailable)
-                  IconButton(
-                    icon: const Icon(Icons.call_rounded),
-                    color: iconColor,
-                    tooltip: 'Call $num',
-                    onPressed: () => onCall(number),
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-/// A single row for a custom contact.
-class _CustomContactRow extends StatelessWidget {
-  final CustomContact contact;
-  final bool showCategory;
-  final Future<void> Function(String) onCall;
-  final Color onSurface;
-  final Color primary;
-
-  const _CustomContactRow({
-    required this.contact,
-    required this.showCategory,
-    required this.onCall,
-    required this.onSurface,
-    required this.primary,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: primary.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(Icons.person_rounded, color: primary, size: 20),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  contact.name,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                if (showCategory && contact.category.isNotEmpty)
-                  Text(
-                    contact.category,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: primary.withValues(alpha: 0.7),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                Text(
-                  contact.phone,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: onSurface.withValues(alpha: 0.55),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.call_rounded),
-            color: primary,
-            tooltip: 'Call ${contact.name}',
-            onPressed: () => onCall(contact.phone),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// A styled text field for the bottom sheet.
-class _SheetField extends StatelessWidget {
-  final TextEditingController controller;
-  final String label;
-  final IconData icon;
-  final TextInputType inputType;
-
-  const _SheetField({
-    required this.controller,
-    required this.label,
-    required this.icon,
-    required this.inputType,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      keyboardType: inputType,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
         ),
       ),
     );

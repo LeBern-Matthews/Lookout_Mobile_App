@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:animations/animations.dart';
 import 'services/country_provider.dart';
 import 'services/checklist_provider.dart';
 import 'services/custom_contacts_provider.dart';
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: Provider.of<ThemeProvider>(context).themeData,
       themeMode: ThemeMode.system,
-      themeAnimationDuration: const Duration(milliseconds: 0),
+      themeAnimationDuration: const Duration(milliseconds: 400),
       themeAnimationCurve: Curves.easeInOut,
       home: const RootPage(),
     );
@@ -81,9 +82,21 @@ class _RootPageState extends State<RootPage> {
     return Scaffold(
       body: Stack(
         children: [
-          IndexedStack(
-            index: currentPage,
-            children: pages,
+          PageTransitionSwitcher(
+            duration: const Duration(milliseconds: 500),
+            transitionBuilder: (child, primaryAnimation, secondaryAnimation) {
+              return SharedAxisTransition(
+                animation: primaryAnimation,
+                secondaryAnimation: secondaryAnimation,
+                transitionType: SharedAxisTransitionType.horizontal,
+                fillColor: Colors.transparent,
+                child: child,
+              );
+            },
+            child: KeyedSubtree(
+              key: ValueKey<int>(currentPage),
+              child: pages[currentPage],
+            ),
           ),
           const ConnectivityPopup(),
         ],

@@ -1,9 +1,8 @@
-import 'dart:math' show pi;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/checklist_provider.dart';
 import '../services/country_provider.dart';
-import '../components/calling_button.dart';
+import '../components/home_components.dart';
 
 class HomePage extends StatefulWidget {
   final Function(int)? onNavigate;
@@ -110,7 +109,7 @@ class _HomePageState extends State<HomePage>
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // ── Readiness gauge ──────────────────────────────────────────
-            _AppCard(
+            AppCard(
               bg: cardBg,
               shadows: cardShadow,
               child: Column(
@@ -127,7 +126,7 @@ class _HomePageState extends State<HomePage>
                   const SizedBox(height: 20),
                   AnimatedBuilder(
                     animation: _progressAnimation,
-                    builder: (_, __) => _CircularGauge(
+                    builder: (_, __) => CircularGauge(
                       progress: _progressAnimation.value,
                       color: checklist.colour,
                       size: 170,
@@ -158,7 +157,7 @@ class _HomePageState extends State<HomePage>
             const SizedBox(height: 14),
 
             // ── Next step ────────────────────────────────────────────────
-            _AppCard(
+            AppCard(
               bg: cardBg,
               shadows: cardShadow,
               child: Row(
@@ -169,7 +168,7 @@ class _HomePageState extends State<HomePage>
                       color: primary.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Icon(Icons.arrow_circle_right_rounded,
+                    child: PulsingIcon(icon: Icons.arrow_circle_right_rounded,
                         color: primary, size: 26),
                   ),
                   const SizedBox(width: 14),
@@ -230,7 +229,7 @@ class _HomePageState extends State<HomePage>
             const SizedBox(height: 14),
 
             // ── Emergency numbers ────────────────────────────────────────
-            _AppCard(
+            AppCard(
               bg: cardBg,
               shadows: cardShadow,
               child: Column(
@@ -261,7 +260,7 @@ class _HomePageState extends State<HomePage>
                         fontSize: 12, color: onSurface.withValues(alpha: 0.45)),
                   ),
                   Divider(height: 20, color: onSurface.withValues(alpha: 0.1)),
-                  _EmergencyRow(
+                  EmergencyRow(
                     icon: Icons.local_police_rounded,
                     label: 'Police',
                     number: countryP.primaryPolice,
@@ -269,7 +268,7 @@ class _HomePageState extends State<HomePage>
                     callee: 'Police',
                   ),
                   const SizedBox(height: 12),
-                  _EmergencyRow(
+                  EmergencyRow(
                     icon: Icons.local_hospital_rounded,
                     label: 'Ambulance',
                     number: countryP.primaryAmbulance,
@@ -277,7 +276,7 @@ class _HomePageState extends State<HomePage>
                     callee: 'Ambulance',
                   ),
                   const SizedBox(height: 12),
-                  _EmergencyRow(
+                  EmergencyRow(
                     icon: Icons.local_fire_department_rounded,
                     label: 'Fire Dept.',
                     number: countryP.primaryFire,
@@ -294,7 +293,7 @@ class _HomePageState extends State<HomePage>
             Row(
               children: [
                 Expanded(
-                  child: _QuickAction(
+                  child: QuickAction(
                     icon: Icons.checklist_sharp,
                     label: 'Checklist',
                     subtitle: '${checklist.checkedCount}/${checklist.totalCount} done',
@@ -307,7 +306,7 @@ class _HomePageState extends State<HomePage>
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: _QuickAction(
+                  child: QuickAction(
                     icon: Icons.contact_emergency_rounded,
                     label: 'Contacts',
                     subtitle: 'Emergency numbers',
@@ -320,242 +319,6 @@ class _HomePageState extends State<HomePage>
                 ),
               ],
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ─── Shared card wrapper ────────────────────────────────────────────────────
-
-class _AppCard extends StatelessWidget {
-  final Widget child;
-  final Color bg;
-  final List<BoxShadow> shadows;
-
-  const _AppCard({required this.child, required this.bg, required this.shadows});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: shadows,
-      ),
-      child: child,
-    );
-  }
-}
-
-// ─── Circular gauge ─────────────────────────────────────────────────────────
-
-class _CircularGauge extends StatelessWidget {
-  final double progress;
-  final Color color;
-  final double size;
-  final Color onSurface;
-
-  const _CircularGauge({
-    required this.progress,
-    required this.color,
-    required this.size,
-    required this.onSurface,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final pct = (progress * 100).toInt();
-    return SizedBox(
-      width: size,
-      height: size,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          CustomPaint(
-            size: Size(size, size),
-            painter: _GaugePainter(progress: progress, color: color, onSurface: onSurface),
-          ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                '$pct%',
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.w800,
-                  color: color,
-                  height: 1,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                'prepared',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: onSurface.withValues(alpha: 0.45),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _GaugePainter extends CustomPainter {
-  final double progress;
-  final Color color;
-  final Color onSurface;
-
-  _GaugePainter({required this.progress, required this.color, required this.onSurface});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    const stroke = 14.0;
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = (size.width - stroke) / 2;
-
-    final bgPaint = Paint()
-      ..color = onSurface.withValues(alpha: 0.1)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = stroke
-      ..strokeCap = StrokeCap.round;
-
-    final fgPaint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = stroke
-      ..strokeCap = StrokeCap.round;
-
-    canvas.drawCircle(center, radius, bgPaint);
-
-    if (progress > 0) {
-      canvas.drawArc(
-        Rect.fromCircle(center: center, radius: radius),
-        -pi / 2,
-        2 * pi * progress,
-        false,
-        fgPaint,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(_GaugePainter old) =>
-      old.progress != progress || old.color != color;
-}
-
-// ─── Emergency row ───────────────────────────────────────────────────────────
-
-class _EmergencyRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String number;
-  final Color iconColor;
-  final String callee;
-
-  const _EmergencyRow({
-    required this.icon,
-    required this.label,
-    required this.number,
-    required this.iconColor,
-    required this.callee,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final onSurface = Theme.of(context).colorScheme.onSurface;
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: iconColor.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(icon, color: iconColor, size: 20),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(label,
-                  style: const TextStyle(
-                      fontSize: 12, fontWeight: FontWeight.w700)),
-              Text(
-                number.isEmpty ? 'Not available' : number,
-                style: TextStyle(
-                    fontSize: 14, color: onSurface.withValues(alpha: 0.65)),
-              ),
-            ],
-          ),
-        ),
-        CallingButton(phoneNumber: number, callee: callee),
-      ],
-    );
-  }
-}
-
-// ─── Quick action card ───────────────────────────────────────────────────────
-
-class _QuickAction extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String subtitle;
-  final Color color;
-  final VoidCallback onTap;
-  final Color bg;
-  final List<BoxShadow> shadows;
-  final Color onSurface;
-
-  const _QuickAction({
-    required this.icon,
-    required this.label,
-    required this.subtitle,
-    required this.color,
-    required this.onTap,
-    required this.bg,
-    required this.shadows,
-    required this.onSurface,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: shadows,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(icon, color: color, size: 22),
-            ),
-            const SizedBox(height: 12),
-            Text(label,
-                style: const TextStyle(
-                    fontWeight: FontWeight.w700, fontSize: 14)),
-            const SizedBox(height: 2),
-            Text(subtitle,
-                style: TextStyle(
-                    fontSize: 12, color: onSurface.withValues(alpha: 0.45))),
           ],
         ),
       ),
