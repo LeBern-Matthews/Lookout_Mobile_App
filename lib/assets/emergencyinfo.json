@@ -1,0 +1,36 @@
+[
+  { "title": "Water: 1 gallon per person, per day, for at least 3 days", "weight": 10 },
+  { "title": "Non-perishable Food: Canned goods, dries fruits, nuts", "weight": 10 },
+  { "title": "First-Aid kit", "weight": 10 },
+  { "title": "Prescription medications: A supply for at least a week, along with any necessary medical equipment", "weight": 10 },
+  
+  { "title": "Water purification tablets or filters", "weight": 9 },
+  { "title": "Battery-powered or hand-cranked radio", "weight": 9 },
+  { "title": "Flashlights and extra batteries", "weight": 9 },
+  { "title": "Pet supplies", "weight": 9 },
+  
+  { "title": "Manual can opener", "weight": 8 },
+  { "title": "Cell phone charger", "weight": 8 },
+  { "title": "Solar-powered chargers", "weight": 8 },
+  { "title": "Important documents: Birth Certificates, insurance policies", "weight": 8 },
+  { "title": "Waterproof containers: To store important documents, electronics, or valuables safely", "weight": 8 },
+  { "title": "Cash: ATMs may be unavailable", "weight": 8 },
+  
+  { "title": "Extra fuel for generators or vehicles", "weight": 7 },
+  { "title": "Multi-purpose and other tools", "weight": 6 },
+  { "title": "Duct tape and plastic sheeting: For emergency repairs or sealing windows and doors", "weight": 6 },
+  
+  { "title": "Hygiene Items", "weight": 5 },
+  { "title": "Blankets and Pillows", "weight": 5 },
+  
+  { "title": "Rain Gear", "weight": 4 },
+  { "title": "Work gloves", "weight": 4 },
+  
+  { "title": "Emergency whistle", "weight": 3 },
+  { "title": "Protective gear", "weight": 3 },
+  
+  { "title": "Wet wipes", "weight": 2 },
+  { "title": "Plastic bags", "weight": 2 },
+  
+  { "title": "Physical maps of your area", "weight": 1 }
+]

@@ -97,6 +97,6 @@ flutter:
 
   assets:
 
-    - lib/assets/emergencyinfo.txt
+    - lib/assets/emergencyinfo.json
     - lib/assets/country_data.json
 

@@ -15,12 +15,13 @@ A mobile app built with Dart and the Flutter framework for hurricane and emergen
 
 ## Features
 ### 1. Home Page
-- Displays a **"Prepared-o-meter"** progress bar that tracks your overall readiness based on checked-off supplies.
+- Displays a **"Prepared-o-meter"** progress bar that tracks your overall readiness based on a **weighted** system of checked-off supplies, prioritizing critical items.
 - Quick-access shortcuts to navigate directly to the Checklist and Contacts pages.
 - Connectivity popup that alerts you when your internet connection drops or is restored.
 
 ### 2. Checklist Page
 - A detailed list of essential supplies for emergencies.
+- Items are **weighted** by importance to give an accurate preparedness score.
 - Interactive checkboxes to track the items you have prepared.
 - Progress is **persisted** across app sessions using SharedPreferences.
 
