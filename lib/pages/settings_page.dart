@@ -90,12 +90,9 @@ class _SettingsPageState extends State<SettingsPage> {
               Consumer<CountryProvider>(
                 builder: (context, countryProvider, _) {
                   final selectedCountry = countryProvider.country;
-                  final isLight =
-                      Theme.of(context).brightness == Brightness.light;
-                  final borderColor = const Color.fromARGB(255, 255, 157, 20);
-                  final cardColor = isLight
-                      ? const Color.fromARGB(255, 255, 236, 209)
-                      : const Color.fromARGB(255, 63, 43, 16);
+                  //final isLight =Theme.of(context).brightness == Brightness.light;
+                  final borderColor = Theme.of(context).colorScheme.primary;
+                  final cardColor = Theme.of(context).colorScheme.primary.withValues(alpha: 0.15);
                       /*
                   final expansionLightColor = const Color.fromARGB(255,210,207,202,);
                   final expansionDarkColor = const Color.fromRGBO(35,32,33,1,);
@@ -128,7 +125,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     
                     controller: _countryController,
                     title: const Text("Country"),
-                    subtitle: Text(selectedCountry),
+                    subtitle: Text(selectedCountry != "Country" 
+                        ? '${countryFlags[selectedCountry] ?? '🌍'} $selectedCountry' 
+                        : selectedCountry),
                     trailing: const Icon(
                       Icons.arrow_drop_down_rounded,
                       size: 40,
@@ -179,7 +178,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                       vertical: 12.0,
                                     ),
                                     child: Text(
-                                      country,
+                                      '${countryFlags[country] ?? '🌍'} $country',
                                       style: const TextStyle(fontSize: 16),
                                     ),
                                   ),

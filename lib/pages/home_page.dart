@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../services/checklist_provider.dart';
 import '../services/country_provider.dart';
 import '../components/home_components.dart';
+import '../components/country_selector.dart';
 
 class HomePage extends StatefulWidget {
   final Function(int)? onNavigate;
@@ -255,7 +256,7 @@ class _HomePageState extends State<HomePage>
                   Text(
                     countryP.country == 'Country'
                         ? 'Set your country in Settings'
-                        : countryP.country,
+                        : '${countryFlags[countryP.country] ?? '🌍'} ${countryP.country}',
                     style: TextStyle(
                         fontSize: 12, color: onSurface.withValues(alpha: 0.45)),
                   ),
