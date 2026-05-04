@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../components/country_selector.dart';
 import '../../services/country_provider.dart';
+import '../../services/location_service.dart';
 import 'package:provider/provider.dart';
 import 'phase1_know_you.dart'; // SelectionCard, onboardingHeader
 
@@ -8,11 +9,83 @@ import 'phase1_know_you.dart'; // SelectionCard, onboardingHeader
 // Phase 2 · Know Your Risk — Screens 4, 5, 6, 7
 // ─────────────────────────────────────────────────────────────────────────────
 
-/// Screen 4 — Country selector (no parish)
-class CountryScreen extends StatelessWidget {
+/// Screen 4 — Country selector with GPS auto-detection
+class CountryScreen extends StatefulWidget {
   final String selectedCountry;
   final ValueChanged<String> onCountryChanged;
   const CountryScreen({super.key, required this.selectedCountry, required this.onCountryChanged});
+
+  @override
+  State<CountryScreen> createState() => _CountryScreenState();
+}
+
+class _CountryScreenState extends State<CountryScreen>
+    with SingleTickerProviderStateMixin {
+  /// `null` = still detecting, empty string = detection failed, non-empty = detected
+  String? _detectedCountry;
+  bool _isDetecting = true;
+  bool _bannerDismissed = false;
+
+  late AnimationController _bannerCtrl;
+  late Animation<double> _bannerFade;
+  late Animation<Offset> _bannerSlide;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _bannerCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _bannerFade = CurvedAnimation(parent: _bannerCtrl, curve: Curves.easeOut);
+    _bannerSlide = Tween<Offset>(
+      begin: const Offset(0, -0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _bannerCtrl, curve: Curves.easeOutCubic));
+
+    _detectCountry();
+  }
+
+  @override
+  void dispose() {
+    _bannerCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _detectCountry() async {
+    final country = await LocationService.detectCountry();
+    if (!mounted) return;
+    setState(() {
+      _detectedCountry = country ?? '';
+      _isDetecting = false;
+    });
+    if (country != null && country.isNotEmpty) {
+      _bannerCtrl.forward();
+    }
+  }
+
+  void _acceptDetected() {
+    final country = _detectedCountry!;
+    widget.onCountryChanged(country);
+    final countryp = Provider.of<CountryProvider>(context, listen: false);
+    countryp.setCountry(country);
+    countryp.loadJsonData(country);
+    setState(() => _bannerDismissed = true);
+  }
+
+  void _dismissBanner() {
+    _bannerCtrl.reverse().then((_) {
+      if (mounted) setState(() => _bannerDismissed = true);
+    });
+  }
+
+  void _selectCountry(String c) {
+    widget.onCountryChanged(c);
+    final countryp = Provider.of<CountryProvider>(context, listen: false);
+    countryp.setCountry(c);
+    countryp.loadJsonData(c);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,14 +95,142 @@ class CountryScreen extends StatelessWidget {
     final cardBg = isLight ? Colors.white : const Color.fromARGB(255, 24, 24, 24);
     final countries = countryOptions();
 
+    final showBanner = !_bannerDismissed &&
+        _detectedCountry != null &&
+        _detectedCountry!.isNotEmpty;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(24, 12, 24, 100),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         onboardingHeader(context, 'Where are you located?',
             'We\'ll use this to show you the correct emergency numbers.'),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
+
+        // ── Loading indicator while detecting ──
+        if (_isDetecting)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 16, height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: primary.withValues(alpha: 0.6),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  'Detecting your location…',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: onSurface.withValues(alpha: 0.5),
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+        // ── Detected country suggestion banner ──
+        if (showBanner)
+          SlideTransition(
+            position: _bannerSlide,
+            child: FadeTransition(
+              opacity: _bannerFade,
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 20),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      primary.withValues(alpha: 0.12),
+                      primary.withValues(alpha: 0.06),
+                    ],
+                  ),
+                  border: Border.all(
+                    color: primary.withValues(alpha: 0.3),
+                    width: 1.5,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.location_on_rounded, color: primary, size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: RichText(
+                            text: TextSpan(
+                              style: TextStyle(fontSize: 14, color: onSurface, height: 1.4),
+                              children: [
+                                const TextSpan(text: 'We\'ve detected that you\'re in '),
+                                TextSpan(
+                                  text: '${countryFlags[_detectedCountry] ?? '🌍'} $_detectedCountry',
+                                  style: TextStyle(fontWeight: FontWeight.w700, color: primary),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: _acceptDetected,
+                            icon: const Icon(Icons.check_rounded, size: 18),
+                            label: const Text('Use this country'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: primary,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              elevation: 0,
+                              textStyle: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        TextButton(
+                          onPressed: _dismissBanner,
+                          style: TextButton.styleFrom(
+                            foregroundColor: onSurface.withValues(alpha: 0.6),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          ),
+                          child: const Text('Dismiss', style: TextStyle(fontSize: 13)),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Or select from the list below. Country can be changed later in Settings.',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: onSurface.withValues(alpha: 0.45),
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+        // ── Country list ──
         ...countries.map((c) {
-          final sel = selectedCountry == c;
+          final sel = widget.selectedCountry == c;
           final flag = countryFlags[c] ?? '🌍';
           return Padding(
             padding: const EdgeInsets.only(bottom: 8),
@@ -38,13 +239,7 @@ class CountryScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
               child: InkWell(
                 borderRadius: BorderRadius.circular(14),
-                onTap: () {
-                  onCountryChanged(c);
-                  // Also update CountryProvider so emergency numbers are correct
-                  final countryp = Provider.of<CountryProvider>(context, listen: false);
-                  countryp.setCountry(c);
-                  countryp.loadJsonData(c);
-                },
+                onTap: () => _selectCountry(c),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
