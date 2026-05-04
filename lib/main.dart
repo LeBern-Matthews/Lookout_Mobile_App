@@ -2,21 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:animations/animations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'services/country_provider.dart';
 import 'services/checklist_provider.dart';
 import 'services/custom_contacts_provider.dart';
+import 'services/user_preferences_provider.dart';
 import 'pages/emergency_contacts.dart';
 import 'pages/essential_checklist_page.dart';
 import 'pages/home_page.dart';
 import 'pages/settings_page.dart';
+import 'pages/onboarding_pages/onboarding_flow.dart';
 import 'themes/theme_provider.dart';
 import 'services/has_internet.dart';
 import 'components/connectivity_popup.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   startInternetMonitoring();
+
+  // Check onboarding status before launching the app
+  final prefs = await SharedPreferences.getInstance();
+  final hasCompleted = prefs.getBool('hasCompletedOnboarding') ?? false;
+
   runApp(
     MultiProvider(
       providers: [
@@ -24,14 +32,16 @@ void main() {
         ChangeNotifierProvider(create: (_) => CountryProvider()),
         ChangeNotifierProvider(create: (_) => ChecklistProvider()),
         ChangeNotifierProvider(create: (_) => CustomContactsProvider()),
+        ChangeNotifierProvider(create: (_) => UserPreferencesProvider()),
       ],
-      child: const MyApp(),
+      child: MyApp(hasCompletedOnboarding: hasCompleted),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool hasCompletedOnboarding;
+  const MyApp({super.key, required this.hasCompletedOnboarding});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +51,7 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       themeAnimationDuration: const Duration(milliseconds: 400),
       themeAnimationCurve: Curves.easeInOut,
-      home: const RootPage(),
+      home: hasCompletedOnboarding ? const RootPage() : const OnboardingFlow(),
     );
   }
 }
