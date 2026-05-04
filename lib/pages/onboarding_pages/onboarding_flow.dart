@@ -91,17 +91,17 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
   Widget _buildPage(int index) {
     switch (index) {
       case 0: return const WelcomeScreen();
-      case 1: return HouseholdMembersScreen(
+      case 1: return HouseholdSizeScreen(
+        selectedSize: _householdSize,
+        onSizeChanged: (v) => setState(() => _householdSize = v),
+      );
+      case 2: return HouseholdMembersScreen(
         selectedMembers: _members, selectedChildAges: _childAges,
         selectedPetTypes: _petTypes, medicalNeeds: _medicalNeeds,
         onMembersChanged: (v) => setState(() => _members = v),
         onChildAgesChanged: (v) => setState(() => _childAges = v),
         onPetTypesChanged: (v) => setState(() => _petTypes = v),
         onMedicalNeedsChanged: (v) => setState(() => _medicalNeeds = v),
-      );
-      case 2: return HouseholdSizeScreen(
-        selectedSize: _householdSize,
-        onSizeChanged: (v) => setState(() => _householdSize = v),
       );
       case 3: return CountryScreen(
         selectedCountry: _country,

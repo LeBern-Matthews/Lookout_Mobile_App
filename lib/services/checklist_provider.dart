@@ -17,6 +17,9 @@ class ChecklistItem {
 
 /// Centralised checklist state with SharedPreferences persistence.
 /// Keeps backward compatible UI getters but uses weights for progress.
+///
+/// Now household-aware: items are dynamically adjusted based on
+/// onboarding data (household size, members, medical needs).
 class ChecklistProvider with ChangeNotifier {
   final List<ChecklistItem> _itemsList = [];
   bool _isLoaded = false;
@@ -53,28 +56,123 @@ class ChecklistProvider with ChangeNotifier {
     return null;
   }
 
-  /// Loads items from the bundled JSON file and restores saved states.
-  Future<void> loadItems() async {
+  /// Generates a stable persistence key from an item title.
+  /// Uses a simple hash so that checked state survives list reordering
+  /// when items are dynamically added/removed based on household profile.
+  String _persistKey(String title) {
+    // Use a short stable prefix of the title to create a readable key
+    final normalized = title.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '_');
+    final short = normalized.length > 40 ? normalized.substring(0, 40) : normalized;
+    return 'cl_$short';
+  }
+
+  /// Quantity label based on household size tier.
+  String _scaleQty(String perPerson, String householdSize) {
+    switch (householdSize) {
+      case '1':
+        return perPerson;
+      case '2-3':
+        // Scale the number in the perPerson string
+        if (perPerson.contains('1 gallon')) {
+          return '2–3 gallons';
+        }
+        return '2–3 people supply';
+      case '4-6':
+        if (perPerson.contains('1 gallon')) {
+          return '4–6 gallons';
+        }
+        return '4–6 people supply';
+      case '7+':
+        if (perPerson.contains('1 gallon')) {
+          return '7+ gallons';
+        }
+        return '7+ people supply';
+      default:
+        return perPerson; // no size selected — keep the default
+    }
+  }
+
+  /// Loads items from the bundled JSON file and adjusts them based on
+  /// the user's household profile from onboarding.
+  ///
+  /// [householdSize] — '1', '2-3', '4-6', '7+' or empty
+  /// [householdMembers] — set of 'adults', 'children', 'elderly', 'pets', 'medical'
+  /// [medicalNeeds] — free-text describing specific medical needs
+  Future<void> loadItems({
+    String householdSize = '',
+    Set<String> householdMembers = const {},
+    String medicalNeeds = '',
+  }) async {
     if (_isLoaded) return;
 
     final String content =
         await rootBundle.loadString('lib/assets/emergencyinfo.json');
 
     final List<dynamic> jsonList = json.decode(content);
-
     final prefs = await SharedPreferences.getInstance();
-    
+
+    final List<ChecklistItem> processed = [];
+
     for (int i = 0; i < jsonList.length; i++) {
       final Map<String, dynamic> itemJson = jsonList[i];
-      final bool checked = prefs.getBool('checklist_item_$i') ?? false;
-      
-      _itemsList.add(ChecklistItem(
-        title: itemJson['title'] as String,
-        weight: itemJson['weight'] as int,
+      String title = itemJson['title'] as String;
+      int weight = itemJson['weight'] as int;
+      final conditional = itemJson['conditional'] as String?;
+      final scalable = itemJson['scalable'] as bool? ?? false;
+      final template = itemJson['template'] as String?;
+      final perPerson = itemJson['perPerson'] as String?;
+
+      // ── Conditional items: skip if the condition isn't met ──
+      if (conditional == 'pets' && !householdMembers.contains('pets')) {
+        continue;
+      }
+
+      // ── Scalable items: replace {qty} with household-scaled value ──
+      if (scalable && template != null && perPerson != null && householdSize.isNotEmpty) {
+        final qty = _scaleQty(perPerson, householdSize);
+        title = template.replaceAll('{qty}', qty);
+      }
+
+      // ── Medical: append user's specifics to the prescription item ──
+      if (title.startsWith('Prescription medications') &&
+          householdMembers.contains('medical') &&
+          medicalNeeds.isNotEmpty) {
+        title = 'Prescription medications ($medicalNeeds): A supply for at least a week';
+      }
+
+      final key = _persistKey(title);
+      final checked = prefs.getBool(key) ?? false;
+
+      processed.add(ChecklistItem(
+        title: title,
+        weight: weight,
         isChecked: checked,
       ));
     }
 
+    // ── Inject children-specific item if children are in household ──
+    if (householdMembers.contains('children')) {
+      const childTitle = 'Baby formula, bottles, and diapers';
+      final key = _persistKey(childTitle);
+      final checked = prefs.getBool(key) ?? false;
+
+      // Insert after First-Aid kit (index 2 in the base list, but account for removals)
+      int insertAt = processed.length; // fallback: end
+      for (int i = 0; i < processed.length; i++) {
+        if (processed[i].title.startsWith('First-Aid kit')) {
+          insertAt = i + 1;
+          break;
+        }
+      }
+
+      processed.insert(insertAt, ChecklistItem(
+        title: childTitle,
+        weight: 9,
+        isChecked: checked,
+      ));
+    }
+
+    _itemsList.addAll(processed);
     _isLoaded = true;
     notifyListeners();
   }
@@ -84,7 +182,8 @@ class ChecklistProvider with ChangeNotifier {
     if (index < 0 || index >= _itemsList.length) return;
     _itemsList[index].isChecked = !_itemsList[index].isChecked;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('checklist_item_$index', _itemsList[index].isChecked);
+    final key = _persistKey(_itemsList[index].title);
+    await prefs.setBool(key, _itemsList[index].isChecked);
     notifyListeners();
   }
 }

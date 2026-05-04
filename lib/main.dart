@@ -76,9 +76,27 @@ class _RootPageState extends State<RootPage> {
       const EmergencyContactsPage(),
       const SettingsPage(),
     ];
-    // Load checklist items + restore saved state as soon as the app starts
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ChecklistProvider>().loadItems();
+    // Load user preferences, then load checklist with household data
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final userPrefs = context.read<UserPreferencesProvider>();
+      await userPrefs.loadFromPrefs();
+
+      if (!mounted) return;
+
+      // Load checklist with household profile for personalised items
+      context.read<ChecklistProvider>().loadItems(
+        householdSize: userPrefs.householdSize,
+        householdMembers: userPrefs.householdMembers,
+        medicalNeeds: userPrefs.medicalNeeds,
+      );
+
+      // Restore saved country selection
+      if (userPrefs.country.isNotEmpty) {
+        final cp = context.read<CountryProvider>();
+        cp.setCountry(userPrefs.country);
+        cp.loadJsonData(userPrefs.country);
+      }
+
       context.read<CustomContactsProvider>().loadContacts();
     });
   }
