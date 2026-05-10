@@ -3,10 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:animations/animations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'services/country_provider.dart';
 import 'services/checklist_provider.dart';
 import 'services/custom_contacts_provider.dart';
 import 'services/user_preferences_provider.dart';
+import 'services/analytics_service.dart';
 import 'pages/emergency_contacts.dart';
 import 'pages/essential_checklist_page.dart';
 import 'pages/home_page.dart';
@@ -20,6 +23,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   startInternetMonitoring();
+
+  // Initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   // Check onboarding status before launching the app
   final prefs = await SharedPreferences.getInstance();
@@ -51,6 +59,7 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       themeAnimationDuration: const Duration(milliseconds: 400),
       themeAnimationCurve: Curves.easeInOut,
+      navigatorObservers: [AnalyticsService.instance.observer],
       home: hasCompletedOnboarding ? const RootPage() : const OnboardingFlow(),
     );
   }
@@ -95,14 +104,27 @@ class _RootPageState extends State<RootPage> {
         final cp = context.read<CountryProvider>();
         cp.setCountry(userPrefs.country);
         cp.loadJsonData(userPrefs.country);
+
+        // Set user properties for Firebase segmentation
+        AnalyticsService.instance.setUserCountry(userPrefs.country);
+      }
+      if (userPrefs.householdSize.isNotEmpty) {
+        AnalyticsService.instance.setHouseholdSize(userPrefs.householdSize);
       }
 
       context.read<CustomContactsProvider>().loadContacts();
+
+      // Log the initial page view since we don't use Navigator for tabs
+      AnalyticsService.instance.logPageView(_tabNames[currentPage]);
     });
   }
 
+  static const _tabNames = ['Home', 'Checklist', 'Contacts', 'Settings'];
+
   void _navigateTo(int index) {
     setState(() => currentPage = index);
+    AnalyticsService.instance.logTabSwitch(index, _tabNames[index]);
+    AnalyticsService.instance.logPageView(_tabNames[index]);
   }
 
   @override

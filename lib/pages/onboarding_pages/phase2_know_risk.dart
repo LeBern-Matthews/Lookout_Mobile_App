@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../components/country_selector.dart';
 import '../../services/country_provider.dart';
 import '../../services/location_service.dart';
+import '../../services/analytics_service.dart';
 import 'package:provider/provider.dart';
 import 'phase1_know_you.dart'; // SelectionCard, onboardingHeader
 
@@ -13,7 +14,14 @@ import 'phase1_know_you.dart'; // SelectionCard, onboardingHeader
 class CountryScreen extends StatefulWidget {
   final String selectedCountry;
   final ValueChanged<String> onCountryChanged;
-  const CountryScreen({super.key, required this.selectedCountry, required this.onCountryChanged});
+  final VoidCallback? onAutoAdvance;
+
+  const CountryScreen({
+    super.key,
+    required this.selectedCountry,
+    required this.onCountryChanged,
+    this.onAutoAdvance,
+  });
 
   @override
   State<CountryScreen> createState() => _CountryScreenState();
@@ -71,10 +79,23 @@ class _CountryScreenState extends State<CountryScreen>
     final countryp = Provider.of<CountryProvider>(context, listen: false);
     countryp.setCountry(country);
     countryp.loadJsonData(country);
+    AnalyticsService.instance.logCountryDetection(
+      detectedCountry: country,
+      accepted: true,
+    );
     setState(() => _bannerDismissed = true);
+
+    // Automatically proceed to the next step
+    if (widget.onAutoAdvance != null) {
+      widget.onAutoAdvance!();
+    }
   }
 
   void _dismissBanner() {
+    AnalyticsService.instance.logCountryDetection(
+      detectedCountry: _detectedCountry ?? '',
+      accepted: false,
+    );
     _bannerCtrl.reverse().then((_) {
       if (mounted) setState(() => _bannerDismissed = true);
     });

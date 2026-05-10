@@ -9,12 +9,19 @@ import '../components/country_selector.dart';
 ///  4. Matches it against the app's supported country list
 class LocationService {
   static final Location _location = Location();
+  static Future<String?>? _detectionFuture;
 
   /// Attempts to detect the user's country from their GPS position.
+  /// If already detecting or detected, returns the cached result.
   ///
   /// Returns the matched country name (key from [countryFlags]) or `null`
   /// if permission is denied, location unavailable, or no match is found.
-  static Future<String?> detectCountry() async {
+  static Future<String?> detectCountry() {
+    _detectionFuture ??= _doDetectCountry();
+    return _detectionFuture!;
+  }
+
+  static Future<String?> _doDetectCountry() async {
     try {
       // ── 1. Ensure location service is enabled ──
       bool serviceEnabled = await _location.serviceEnabled();

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'analytics_service.dart';
 
 class ChecklistItem {
   final String title;
@@ -184,6 +185,14 @@ class ChecklistProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final key = _persistKey(_itemsList[index].title);
     await prefs.setBool(key, _itemsList[index].isChecked);
+    
+
+    // Log analytics
+    AnalyticsService.instance.logChecklistToggle(
+      itemName: _itemsList[index].title,
+      completed: _itemsList[index].isChecked,
+    );
+    AnalyticsService.instance.logChecklistCompletionRate(progress);
     notifyListeners();
   }
 }

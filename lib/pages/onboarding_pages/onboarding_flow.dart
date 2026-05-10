@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:animations/animations.dart';
 import '../../services/user_preferences_provider.dart';
+import '../../services/analytics_service.dart';
+import '../../services/location_service.dart';
 import 'phase1_know_you.dart';
 import 'phase2_know_risk.dart';
 import 'phase3_stay_connected.dart';
@@ -53,18 +55,42 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
   bool get _isLastPage => _currentPage == _totalPages - 1;
   bool get _isFirstPage => _currentPage == 0;
 
+  static const _stepNames = [
+    'welcome', 'household_size', 'household_members',
+    'country', 'home_type', 'coastal', 'hurricane_experience',
+    'alert_preferences', 'emergency_contacts',
+  ];
+
   void _next() {
     if (_isLastPage) {
       _finish();
     } else {
+      if (_isFirstPage) {
+        // Pre-fetch location permission & GPS in the background
+        LocationService.detectCountry();
+      }
+      final nextPage = _currentPage + 1;
+      AnalyticsService.instance.logOnboardingStep(nextPage, _stepNames[nextPage]);
+      AnalyticsService.instance.logPageView(_stepNames[nextPage]);
       setState(() => _currentPage++);
     }
   }
 
   void _back() {
     if (!_isFirstPage) {
+      final prevPage = _currentPage - 1;
+      AnalyticsService.instance.logPageView(_stepNames[prevPage]);
       setState(() => _currentPage--);
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Log the initial onboarding page view
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      AnalyticsService.instance.logPageView(_stepNames[0]);
+    });
   }
 
   Future<void> _finish() async {
@@ -81,6 +107,22 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
     prefs.setAlertChannels(_alertChannels);
     prefs.setAlertFrequency(_alertFreq);
     await prefs.markOnboardingComplete();
+
+    // ── Log analytics ──
+    AnalyticsService.instance.logOnboardingComplete(
+      country: _country,
+      householdSize: _householdSize,
+      membersCount: _members.length,
+      homeType: _homeType,
+      coastalProximity: _coastal,
+      hurricaneExperience: _hurricane,
+    );
+    if (_country.isNotEmpty) {
+      AnalyticsService.instance.setUserCountry(_country);
+    }
+    if (_householdSize.isNotEmpty) {
+      AnalyticsService.instance.setHouseholdSize(_householdSize);
+    }
 
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
@@ -106,6 +148,7 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
       case 3: return CountryScreen(
         selectedCountry: _country,
         onCountryChanged: (v) => setState(() => _country = v),
+        onAutoAdvance: _next,
       );
       case 4: return HomeTypeScreen(
         selectedType: _homeType,
