@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/country_provider.dart';
 import '../services/custom_contacts_provider.dart';
+import '../services/analytics_service.dart';
 import '../components/appbar.dart';
 import '../components/emergency_components.dart';
 import '../components/country_selector.dart';
@@ -34,7 +35,8 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 
-  Future<void> _call(String number) async {
+  Future<void> _call(String number, String service) async {
+    AnalyticsService.instance.logEmergencyCall(service);
     final uri = Uri(scheme: 'tel', path: number);
     final messenger = ScaffoldMessenger.of(context);
     if (await canLaunchUrl(uri)) {
@@ -227,37 +229,34 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
                   ),
                   Divider(height: 20, color: onSurface.withValues(alpha: 0.1)),
 
-                  // Police rows
                   ServiceSection(
                     icon: Icons.local_police_rounded,
                     label: 'Police',
                     numbers: countryP.policeNumbers,
                     iconColor: const Color(0xFF1F74DF),
-                    onCall: _call,
+                    onCall: (n) => _call(n, 'Police'),
                     onSurface: onSurface,
                   ),
 
                   ServiceDivider(onSurface: onSurface),
 
-                  // Ambulance rows
                   ServiceSection(
                     icon: Icons.local_hospital_rounded,
                     label: 'Ambulance',
                     numbers: countryP.ambulanceNumbers,
                     iconColor: Colors.red,
-                    onCall: _call,
+                    onCall: (n) => _call(n, 'Ambulance'),
                     onSurface: onSurface,
                   ),
 
                   ServiceDivider(onSurface: onSurface),
 
-                  // Fire rows
                   ServiceSection(
                     icon: Icons.local_fire_department_rounded,
                     label: 'Fire Dept.',
                     numbers: countryP.fireNumbers,
                     iconColor: Colors.orange.shade700,
-                    onCall: _call,
+                    onCall: (n) => _call(n, 'Fire Dept.'),
                     onSurface: onSurface,
                   ),
                 ],
@@ -369,7 +368,7 @@ class _EmergencyContactsPageState extends State<EmergencyContactsPage> {
                             child: CustomContactRow(
                               contact: contact,
                               showCategory: showCategories,
-                              onCall: _call,
+                              onCall: (n) => _call(n, contact.name),
                               onSurface: onSurface,
                               primary: primary,
                             ),

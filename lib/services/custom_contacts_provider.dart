@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'analytics_service.dart';
 
 class CustomContact {
   final String name;
@@ -72,6 +73,9 @@ class CustomContactsProvider with ChangeNotifier {
     _contacts.add(CustomContact(name: name, phone: phone, category: category));
     notifyListeners();
     await _save();
+    AnalyticsService.instance.logCustomContactCreated(
+      hasCategory: category.isNotEmpty,
+    );
   }
 
   Future<void> removeContact(int index) async {

@@ -1,13 +1,13 @@
 [
-  { "title": "Water: 1 gallon per person, per day, for at least 3 days", "weight": 10 },
-  { "title": "Non-perishable Food: Canned goods, dries fruits, nuts", "weight": 10 },
+  { "title": "Water: 1 gallon per person, per day, for at least 3 days", "weight": 10, "scalable": true, "template": "Water: {qty} per day, for at least 3 days", "perPerson": "1 gallon" },
+  { "title": "Non-perishable Food: Canned goods, dried fruits, nuts", "weight": 10, "scalable": true, "template": "Non-perishable Food ({qty}): Canned goods, dried fruits, nuts", "perPerson": "3-day supply per person" },
   { "title": "First-Aid kit", "weight": 10 },
   { "title": "Prescription medications: A supply for at least a week, along with any necessary medical equipment", "weight": 10 },
   
   { "title": "Water purification tablets or filters", "weight": 9 },
   { "title": "Battery-powered or hand-cranked radio", "weight": 9 },
   { "title": "Flashlights and extra batteries", "weight": 9 },
-  { "title": "Pet supplies", "weight": 9 },
+  { "title": "Pet supplies", "weight": 9, "conditional": "pets" },
   
   { "title": "Manual can opener", "weight": 8 },
   { "title": "Cell phone charger", "weight": 8 },

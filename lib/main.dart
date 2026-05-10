@@ -2,21 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:animations/animations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'services/country_provider.dart';
 import 'services/checklist_provider.dart';
 import 'services/custom_contacts_provider.dart';
+import 'services/user_preferences_provider.dart';
+import 'services/analytics_service.dart';
 import 'pages/emergency_contacts.dart';
 import 'pages/essential_checklist_page.dart';
 import 'pages/home_page.dart';
 import 'pages/settings_page.dart';
+import 'pages/onboarding_pages/onboarding_flow.dart';
 import 'themes/theme_provider.dart';
 import 'services/has_internet.dart';
 import 'components/connectivity_popup.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   startInternetMonitoring();
+
+  // Initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // Check onboarding status before launching the app
+  final prefs = await SharedPreferences.getInstance();
+  final hasCompleted = prefs.getBool('hasCompletedOnboarding') ?? false;
+
   runApp(
     MultiProvider(
       providers: [
@@ -24,14 +40,16 @@ void main() {
         ChangeNotifierProvider(create: (_) => CountryProvider()),
         ChangeNotifierProvider(create: (_) => ChecklistProvider()),
         ChangeNotifierProvider(create: (_) => CustomContactsProvider()),
+        ChangeNotifierProvider(create: (_) => UserPreferencesProvider()),
       ],
-      child: const MyApp(),
+      child: MyApp(hasCompletedOnboarding: hasCompleted),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool hasCompletedOnboarding;
+  const MyApp({super.key, required this.hasCompletedOnboarding});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +59,8 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       themeAnimationDuration: const Duration(milliseconds: 400),
       themeAnimationCurve: Curves.easeInOut,
-      home: const RootPage(),
+      navigatorObservers: [AnalyticsService.instance.observer],
+      home: hasCompletedOnboarding ? const RootPage() : const OnboardingFlow(),
     );
   }
 }
@@ -66,15 +85,46 @@ class _RootPageState extends State<RootPage> {
       const EmergencyContactsPage(),
       const SettingsPage(),
     ];
-    // Load checklist items + restore saved state as soon as the app starts
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ChecklistProvider>().loadItems();
+    // Load user preferences, then load checklist with household data
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final userPrefs = context.read<UserPreferencesProvider>();
+      await userPrefs.loadFromPrefs();
+
+      if (!mounted) return;
+
+      // Load checklist with household profile for personalised items
+      context.read<ChecklistProvider>().loadItems(
+        householdSize: userPrefs.householdSize,
+        householdMembers: userPrefs.householdMembers,
+        medicalNeeds: userPrefs.medicalNeeds,
+      );
+
+      // Restore saved country selection
+      if (userPrefs.country.isNotEmpty) {
+        final cp = context.read<CountryProvider>();
+        cp.setCountry(userPrefs.country);
+        cp.loadJsonData(userPrefs.country);
+
+        // Set user properties for Firebase segmentation
+        AnalyticsService.instance.setUserCountry(userPrefs.country);
+      }
+      if (userPrefs.householdSize.isNotEmpty) {
+        AnalyticsService.instance.setHouseholdSize(userPrefs.householdSize);
+      }
+
       context.read<CustomContactsProvider>().loadContacts();
+
+      // Log the initial page view since we don't use Navigator for tabs
+      AnalyticsService.instance.logPageView(_tabNames[currentPage]);
     });
   }
 
+  static const _tabNames = ['Home', 'Checklist', 'Contacts', 'Settings'];
+
   void _navigateTo(int index) {
     setState(() => currentPage = index);
+    AnalyticsService.instance.logTabSwitch(index, _tabNames[index]);
+    AnalyticsService.instance.logPageView(_tabNames[index]);
   }
 
   @override
