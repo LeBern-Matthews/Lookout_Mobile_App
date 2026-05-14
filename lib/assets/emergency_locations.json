@@ -1,0 +1,46 @@
+{
+  "SVG": {
+    "health_care_facilities": {
+      "hospitals": [
+        {
+          "name": "Template Hospital Name",
+          "coordinates": {
+            "lat": 0.0,
+            "lng": 0.0
+          },
+          "phone": ""
+        }
+      ],
+      "clinics": [
+        {
+          "name": "Template Clinic Name",
+          "coordinates": {
+            "lat": 0.0,
+            "lng": 0.0
+          },
+          "phone": ""
+        }
+      ]
+    },
+    "emergency_centers": [
+      {
+        "name": "Template Emergency Center",
+        "coordinates": {
+          "lat": 0.0,
+          "lng": 0.0
+        },
+        "phone": ""
+      }
+    ],
+    "police_stations": [
+      {
+        "name": "Template Police Station",
+        "coordinates": {
+          "lat": 0.0,
+          "lng": 0.0
+        },
+        "phone": ""
+      }
+    ]
+  }
+}

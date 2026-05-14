@@ -15,10 +15,6 @@ class _MapPageState extends State<MapPage> {
 
   final Location _locationController =Location();
 
-  ///static const LatLng _kGooglePlex =LatLng (37.43296265331129, -122.08832357078792);
-  ///static const LatLng _kingstown =LatLng (13.1600249, -61.2248157);
-  //static const LatLng _fortcharlotte =LatLng (13.15970342578315, -61.23965802761441);
-  //static const LatLng _epages =LatLng (13.162705095707283, -61.23992396101061);
   static const LatLng _miltonKato =LatLng (13.158670985689088, -61.230774818593694);
   static const LatLng _georgetown =LatLng (13.282249027118223, -61.121786306699725);
 

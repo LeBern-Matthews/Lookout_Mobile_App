@@ -103,5 +103,6 @@ flutter:
 
     - lib/assets/emergencyinfo.json
     - lib/assets/country_data.json
+    - lib/assets/emergency_locations.json
     - .env
 
