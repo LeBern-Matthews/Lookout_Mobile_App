@@ -1,45 +1,21 @@
 {
-  "SVG": {
-    "health_care_facilities": {
-      "hospitals": [
-        {
-          "name": "Template Hospital Name",
-          "coordinates": {
-            "lat": 0.0,
-            "lng": 0.0
-          },
-          "phone": ""
-        }
-      ],
-      "clinics": [
-        {
-          "name": "Template Clinic Name",
-          "coordinates": {
-            "lat": 0.0,
-            "lng": 0.0
-          },
-          "phone": ""
-        }
-      ]
-    },
-    "emergency_centers": [
+  "Saint Vincent and the Grenadines": {
+    "hospitals": [
       {
-        "name": "Template Emergency Center",
-        "coordinates": {
-          "lat": 0.0,
-          "lng": 0.0
-        },
-        "phone": ""
+        "name": "Milton Cato Memorial Hospital",
+        "lat": 13.158670985689088,
+        "lng": -61.230774818593694,
+        "phone": "(784) 456-1185"
       }
     ],
+    "clinics": [],
+    "emergency_centers": [],
     "police_stations": [
       {
-        "name": "Template Police Station",
-        "coordinates": {
-          "lat": 0.0,
-          "lng": 0.0
-        },
-        "phone": ""
+        "name": "Kingstown Police Station",
+        "lat": 13.1600,
+        "lng": -61.2248,
+        "phone": "(784) 457-1211"
       }
     ]
   }

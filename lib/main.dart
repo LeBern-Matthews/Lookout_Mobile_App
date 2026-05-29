@@ -14,8 +14,10 @@ import 'services/analytics_service.dart';
 import 'pages/emergency_contacts.dart';
 import 'pages/essential_checklist_page.dart';
 import 'pages/home_page.dart';
+import 'pages/map_page.dart';
 import 'pages/settings_page.dart';
 import 'pages/onboarding_pages/onboarding_flow.dart';
+import 'services/emergency_centers.dart';
 import 'themes/theme_provider.dart';
 import 'services/has_internet.dart';
 import 'components/connectivity_popup.dart';
@@ -45,8 +47,9 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ChecklistProvider()),
         ChangeNotifierProvider(create: (_) => CustomContactsProvider()),
         ChangeNotifierProvider(create: (_) => UserPreferencesProvider()),
+        ChangeNotifierProvider(create: (_) => EmergencyLocationsProvider()),
       ],
-      child: MyApp(hasCompletedOnboarding: hasCompleted),
+      builder: (context, _) => MyApp(hasCompletedOnboarding: hasCompleted),
     ),
   );
 }
@@ -87,6 +90,7 @@ class _RootPageState extends State<RootPage> {
       HomePage(onNavigate: _navigateTo),
       const EssentialChecklistPage(),
       const EmergencyContactsPage(),
+      const MapPage(),
       const SettingsPage(),
     ];
     // Load user preferences, then load checklist with household data
@@ -123,7 +127,7 @@ class _RootPageState extends State<RootPage> {
     });
   }
 
-  static const _tabNames = ['Home', 'Checklist', 'Contacts', 'Settings'];
+  static const _tabNames = ['Home', 'Checklist', 'Contacts', 'Map', 'Settings'];
 
   void _navigateTo(int index) {
     setState(() => currentPage = index);
@@ -165,6 +169,7 @@ class _RootPageState extends State<RootPage> {
           NavigationDestination(icon: Icon(Icons.home), label: "", tooltip: "Home"),
           NavigationDestination(icon: Icon(Icons.checklist_sharp), label: "", tooltip: "Essential items"),
           NavigationDestination(icon: Icon(Icons.contact_emergency_rounded), label: "", tooltip: "Emergency contacts"),
+          NavigationDestination(icon: Icon(Icons.map_rounded), label: "", tooltip: "Emergency Map"),
           NavigationDestination(icon: Icon(Icons.settings), label: "", tooltip: "Settings"),
         ],
         onDestinationSelected: _navigateTo,
