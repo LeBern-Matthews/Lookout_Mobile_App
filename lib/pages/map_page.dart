@@ -321,6 +321,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
         children: [
           // ── Google Map ────────────────────────────────────────────────
           GoogleMap(
+            mapType: MapType.normal,
             initialCameraPosition: const CameraPosition(
               target: LatLng(13.158670985689088, -61.230774818593694),
               zoom: 12,

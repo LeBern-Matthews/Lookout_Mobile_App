@@ -69,8 +69,7 @@ class EmergencyLocation {
 
 class EmergencyLocationsProvider extends ChangeNotifier {
   List<EmergencyLocation> _locations = [];
-  bool _isLoading = false;
-  String _loadedCountry = '';
+  bool _isLoading = false;  String _loadedCountry = '';
 
   List<EmergencyLocation> get locations => List.unmodifiable(_locations);
   bool get isLoading => _isLoading;
